@@ -1,4 +1,10 @@
-import { CheckCircle2, CircleDashed, DatabaseZap, MessageSquareReply, ShieldEllipsis } from 'lucide-react';
+import {
+  CheckCircle2,
+  CircleDashed,
+  DatabaseZap,
+  MessageSquareReply,
+  ShieldEllipsis,
+} from 'lucide-react';
 
 import { PageIntro } from '@/components/page-intro';
 import { Badge } from '@/components/ui/badge';
@@ -9,17 +15,20 @@ const integrations = [
   {
     icon: DatabaseZap,
     label: 'Supabase project',
-    description: 'Hosted auth, Postgres, migrations, and Edge Functions for the hackathon team.',
+    description:
+      'Hosted auth, Postgres, migrations, and Edge Functions for the hackathon team.',
   },
   {
     icon: MessageSquareReply,
     label: 'Twilio adapter',
-    description: 'Webhook-ready placeholder for WhatsApp or SMS confirmations and reminders.',
+    description:
+      'Webhook-ready placeholder for WhatsApp or SMS confirmations and reminders.',
   },
   {
     icon: ShieldEllipsis,
     label: 'Google Calendar adapter',
-    description: 'Provider-level calendar syncing with safe mock behavior when secrets are absent.',
+    description:
+      'Provider-level calendar syncing with safe mock behavior when secrets are absent.',
   },
 ];
 
@@ -38,8 +47,12 @@ export function SettingsPage() {
         <Card className="editorial-card rounded-[2rem] border-[var(--border)] shadow-none">
           <CardContent className="space-y-5 p-6 md:p-7">
             <div>
-              <p className="eyebrow text-[11px] text-[var(--muted)]">Environment readiness</p>
-              <h2 className="headline-display mt-2 text-3xl font-semibold">Status board</h2>
+              <p className="eyebrow text-[11px] text-[var(--muted)]">
+                Environment readiness
+              </p>
+              <h2 className="headline-display mt-2 text-3xl font-semibold">
+                Status board
+              </h2>
             </div>
 
             <div className="grid gap-3">
@@ -64,7 +77,11 @@ export function SettingsPage() {
               <StatusRow
                 label="Clinic link"
                 status={clinic ? 'ready' : 'pending'}
-                detail={clinic ? `${clinic.name} (${clinic.timezone})` : 'The signup trigger will attach new staff to clinic #1.'}
+                detail={
+                  clinic
+                    ? `${clinic.name} (${clinic.timezone})`
+                    : 'The signup trigger will attach new staff to clinic #1.'
+                }
               />
             </div>
 
@@ -78,13 +95,22 @@ export function SettingsPage() {
 
         <div className="space-y-6">
           {integrations.map(({ description, icon: Icon, label }) => (
-            <Card key={label} className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none">
+            <Card
+              key={label}
+              className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none"
+            >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="eyebrow text-[11px] text-[var(--muted)]">Integration seam</p>
-                    <h2 className="headline-display mt-2 text-3xl font-semibold">{label}</h2>
-                    <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">{description}</p>
+                    <p className="eyebrow text-[11px] text-[var(--muted)]">
+                      Integration seam
+                    </p>
+                    <h2 className="headline-display mt-2 text-3xl font-semibold">
+                      {label}
+                    </h2>
+                    <p className="mt-3 text-sm leading-6 text-[var(--muted-foreground)]">
+                      {description}
+                    </p>
                   </div>
                   <div className="rounded-2xl border border-[var(--border)] bg-[var(--color-blush)] p-3 text-[var(--color-pine)]">
                     <Icon className="size-5" />
@@ -122,7 +148,9 @@ function StatusRow({ detail, label, status }: StatusRowProps) {
             {status}
           </Badge>
         </div>
-        <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">{detail}</p>
+        <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
+          {detail}
+        </p>
       </div>
     </div>
   );

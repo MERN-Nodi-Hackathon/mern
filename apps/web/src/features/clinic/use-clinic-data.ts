@@ -13,7 +13,13 @@ import {
 } from '@mern/shared';
 import { z } from 'zod';
 
-import { demoAppointments, demoClinic, demoPatients, demoProviders, demoServices } from '@/lib/demo-data';
+import {
+  demoAppointments,
+  demoClinic,
+  demoPatients,
+  demoProviders,
+  demoServices,
+} from '@/lib/demo-data';
 import { useAuth } from '@/lib/supabase/auth-context';
 
 type ClinicDataSnapshot = {
@@ -92,17 +98,33 @@ export function useClinicData(): ClinicDataSnapshot {
       }));
 
       try {
-        const [providersResponse, servicesResponse, patientsResponse, appointmentsResponse] =
-          await Promise.all([
-            supabaseClient.from('providers').select('*').eq('clinic_id', activeClinic.id).order('name'),
-            supabaseClient.from('services').select('*').eq('clinic_id', activeClinic.id).order('name'),
-            supabaseClient.from('patients').select('*').eq('clinic_id', activeClinic.id).order('name'),
-            supabaseClient
-              .from('appointments')
-              .select('*')
-              .eq('clinic_id', activeClinic.id)
-              .order('start_time', { ascending: true }),
-          ]);
+        const [
+          providersResponse,
+          servicesResponse,
+          patientsResponse,
+          appointmentsResponse,
+        ] = await Promise.all([
+          supabaseClient
+            .from('providers')
+            .select('*')
+            .eq('clinic_id', activeClinic.id)
+            .order('name'),
+          supabaseClient
+            .from('services')
+            .select('*')
+            .eq('clinic_id', activeClinic.id)
+            .order('name'),
+          supabaseClient
+            .from('patients')
+            .select('*')
+            .eq('clinic_id', activeClinic.id)
+            .order('name'),
+          supabaseClient
+            .from('appointments')
+            .select('*')
+            .eq('clinic_id', activeClinic.id)
+            .order('start_time', { ascending: true }),
+        ]);
 
         const queryError =
           providersResponse.error ??
@@ -116,10 +138,14 @@ export function useClinicData(): ClinicDataSnapshot {
 
         const nextSnapshot: ClinicDataSnapshot = {
           clinic: activeClinic,
-          providers: z.array(ProviderSchema).parse(providersResponse.data ?? []),
+          providers: z
+            .array(ProviderSchema)
+            .parse(providersResponse.data ?? []),
           services: z.array(ServiceSchema).parse(servicesResponse.data ?? []),
           patients: z.array(PatientSchema).parse(patientsResponse.data ?? []),
-          appointments: z.array(AppointmentSchema).parse(appointmentsResponse.data ?? []),
+          appointments: z
+            .array(AppointmentSchema)
+            .parse(appointmentsResponse.data ?? []),
           loading: false,
           error: null,
           usingDemo: false,
@@ -133,7 +159,10 @@ export function useClinicData(): ClinicDataSnapshot {
           return;
         }
 
-        const message = error instanceof Error ? error.message : 'Unable to load clinic data.';
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Unable to load clinic data.';
 
         setSnapshot({
           clinic: activeClinic,

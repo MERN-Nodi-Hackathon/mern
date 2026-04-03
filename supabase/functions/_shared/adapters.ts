@@ -28,9 +28,16 @@ export interface CalendarAdapter {
     start?: string;
     end?: string;
   }): Promise<AvailabilitySlot[]>;
-  createEvent(input: CalendarEventInput): Promise<{ externalEventId: string | null }>;
-  updateEvent(input: CalendarEventInput): Promise<{ externalEventId: string | null }>;
-  deleteEvent(input: { calendarId?: string | null; externalEventId?: string | null }): Promise<void>;
+  createEvent(
+    input: CalendarEventInput,
+  ): Promise<{ externalEventId: string | null }>;
+  updateEvent(
+    input: CalendarEventInput,
+  ): Promise<{ externalEventId: string | null }>;
+  deleteEvent(input: {
+    calendarId?: string | null;
+    externalEventId?: string | null;
+  }): Promise<void>;
 }
 
 export interface ReminderAdapter {
@@ -40,7 +47,10 @@ export interface ReminderAdapter {
   }>;
 }
 
-function buildMockSlots(start?: string, providerId?: number): AvailabilitySlot[] {
+function buildMockSlots(
+  start?: string,
+  providerId?: number,
+): AvailabilitySlot[] {
   const anchor = start ? new Date(start) : new Date();
   anchor.setMinutes(0, 0, 0);
 
@@ -59,7 +69,11 @@ function buildMockSlots(start?: string, providerId?: number): AvailabilitySlot[]
 }
 
 class MockCalendarAdapter implements CalendarAdapter {
-  async listAvailability(input: { clinicId: number; providerId?: number; start?: string }) {
+  async listAvailability(input: {
+    clinicId: number;
+    providerId?: number;
+    start?: string;
+  }) {
     return buildMockSlots(input.start, input.providerId);
   }
 
@@ -68,10 +82,16 @@ class MockCalendarAdapter implements CalendarAdapter {
   }
 
   async updateEvent(input: CalendarEventInput) {
-    return { externalEventId: input.externalEventId ?? `mock_evt_${crypto.randomUUID()}` };
+    return {
+      externalEventId:
+        input.externalEventId ?? `mock_evt_${crypto.randomUUID()}`,
+    };
   }
 
-  async deleteEvent(_input: { calendarId?: string | null; externalEventId?: string | null }) {
+  async deleteEvent(_input: {
+    calendarId?: string | null;
+    externalEventId?: string | null;
+  }) {
     return;
   }
 }
@@ -80,17 +100,22 @@ class GoogleCalendarAdapter implements CalendarAdapter {
   private readonly accessToken = Deno.env.get('GOOGLE_CALENDAR_ACCESS_TOKEN')!;
 
   private async request(path: string, init?: RequestInit) {
-    const response = await fetch(`https://www.googleapis.com/calendar/v3${path}`, {
-      ...init,
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        'Content-Type': 'application/json',
-        ...(init?.headers ?? {}),
+    const response = await fetch(
+      `https://www.googleapis.com/calendar/v3${path}`,
+      {
+        ...init,
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          'Content-Type': 'application/json',
+          ...(init?.headers ?? {}),
+        },
       },
-    });
+    );
 
     if (!response.ok) {
-      throw new Error(`Google Calendar request failed: ${response.status} ${await response.text()}`);
+      throw new Error(
+        `Google Calendar request failed: ${response.status} ${await response.text()}`,
+      );
     }
 
     return response.json();
@@ -135,15 +160,18 @@ class GoogleCalendarAdapter implements CalendarAdapter {
       return { externalEventId: `mock_evt_${crypto.randomUUID()}` };
     }
 
-    const payload = await this.request(`/calendars/${encodeURIComponent(input.calendarId)}/events`, {
-      method: 'POST',
-      body: JSON.stringify({
-        summary: `${input.serviceName} · ${input.patientName}`,
-        description: input.notes ?? undefined,
-        start: { dateTime: input.start },
-        end: { dateTime: input.end },
-      }),
-    });
+    const payload = await this.request(
+      `/calendars/${encodeURIComponent(input.calendarId)}/events`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          summary: `${input.serviceName} · ${input.patientName}`,
+          description: input.notes ?? undefined,
+          start: { dateTime: input.start },
+          end: { dateTime: input.end },
+        }),
+      },
+    );
 
     return {
       externalEventId: payload.id ?? null,
@@ -152,7 +180,10 @@ class GoogleCalendarAdapter implements CalendarAdapter {
 
   async updateEvent(input: CalendarEventInput) {
     if (!input.calendarId || !input.externalEventId) {
-      return { externalEventId: input.externalEventId ?? `mock_evt_${crypto.randomUUID()}` };
+      return {
+        externalEventId:
+          input.externalEventId ?? `mock_evt_${crypto.randomUUID()}`,
+      };
     }
 
     const payload = await this.request(
@@ -173,7 +204,10 @@ class GoogleCalendarAdapter implements CalendarAdapter {
     };
   }
 
-  async deleteEvent(input: { calendarId?: string | null; externalEventId?: string | null }) {
+  async deleteEvent(input: {
+    calendarId?: string | null;
+    externalEventId?: string | null;
+  }) {
     if (!input.calendarId || !input.externalEventId) {
       return;
     }
@@ -197,7 +231,9 @@ class MockReminderAdapter implements ReminderAdapter {
 class TwilioReminderAdapter implements ReminderAdapter {
   private readonly sid = Deno.env.get('TWILIO_ACCOUNT_SID')!;
   private readonly token = Deno.env.get('TWILIO_AUTH_TOKEN')!;
-  private readonly from = Deno.env.get('TWILIO_WHATSAPP_NUMBER') ?? Deno.env.get('TWILIO_SMS_NUMBER')!;
+  private readonly from =
+    Deno.env.get('TWILIO_WHATSAPP_NUMBER') ??
+    Deno.env.get('TWILIO_SMS_NUMBER')!;
 
   async sendMessage(input: ReminderMessageInput) {
     if (!input.phone) {
@@ -214,17 +250,22 @@ class TwilioReminderAdapter implements ReminderAdapter {
       Body: input.body,
     });
 
-    const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${this.sid}/Messages.json`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+    const response = await fetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${this.sid}/Messages.json`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: payload,
       },
-      body: payload,
-    });
+    );
 
     if (!response.ok) {
-      throw new Error(`Twilio request failed: ${response.status} ${await response.text()}`);
+      throw new Error(
+        `Twilio request failed: ${response.status} ${await response.text()}`,
+      );
     }
 
     return {
@@ -243,7 +284,8 @@ export function createCalendarAdapter(): CalendarAdapter {
 export function createReminderAdapter(): ReminderAdapter {
   return Deno.env.get('TWILIO_ACCOUNT_SID') &&
     Deno.env.get('TWILIO_AUTH_TOKEN') &&
-    (Deno.env.get('TWILIO_WHATSAPP_NUMBER') || Deno.env.get('TWILIO_SMS_NUMBER'))
+    (Deno.env.get('TWILIO_WHATSAPP_NUMBER') ||
+      Deno.env.get('TWILIO_SMS_NUMBER'))
     ? new TwilioReminderAdapter()
     : new MockReminderAdapter();
 }

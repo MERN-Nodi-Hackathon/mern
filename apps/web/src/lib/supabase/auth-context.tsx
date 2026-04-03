@@ -68,7 +68,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (clinicError || !clinicData) {
       setProfile(parsedProfile);
       setClinic(null);
-      setError(clinicError?.message ?? 'Clinic record not found for the active profile.');
+      setError(
+        clinicError?.message ??
+          'Clinic record not found for the active profile.',
+      );
       return;
     }
 
@@ -87,7 +90,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const supabaseClient = client;
 
     async function bootstrap() {
-      const { data, error: sessionError } = await supabaseClient.auth.getSession();
+      const { data, error: sessionError } =
+        await supabaseClient.auth.getSession();
 
       if (!mounted) {
         return;

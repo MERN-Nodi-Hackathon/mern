@@ -16,9 +16,16 @@ export function AppointmentsPage() {
 
   const visibleAppointments = appointments.filter((appointment) => {
     const patient = patients.find((item) => item.id === appointment.patient_id);
-    const provider = providers.find((item) => item.id === appointment.provider_id);
+    const provider = providers.find(
+      (item) => item.id === appointment.provider_id,
+    );
     const service = services.find((item) => item.id === appointment.service_id);
-    const haystack = [patient?.name, provider?.name, service?.name, appointment.status]
+    const haystack = [
+      patient?.name,
+      provider?.name,
+      service?.name,
+      appointment.status,
+    ]
       .filter(Boolean)
       .join(' ')
       .toLowerCase();
@@ -46,17 +53,30 @@ export function AppointmentsPage() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         {visibleAppointments.map((appointment) => {
-          const patient = patients.find((item) => item.id === appointment.patient_id);
-          const provider = providers.find((item) => item.id === appointment.provider_id);
-          const service = services.find((item) => item.id === appointment.service_id);
+          const patient = patients.find(
+            (item) => item.id === appointment.patient_id,
+          );
+          const provider = providers.find(
+            (item) => item.id === appointment.provider_id,
+          );
+          const service = services.find(
+            (item) => item.id === appointment.service_id,
+          );
 
           return (
-            <Card key={appointment.id} className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none">
+            <Card
+              key={appointment.id}
+              className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none"
+            >
               <CardContent className="p-5">
                 <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <p className="eyebrow text-[11px] text-[var(--muted)]">Appointment #{appointment.id}</p>
-                    <h2 className="headline-display mt-2 text-3xl font-semibold">{service?.name ?? 'Unmapped service'}</h2>
+                    <p className="eyebrow text-[11px] text-[var(--muted)]">
+                      Appointment #{appointment.id}
+                    </p>
+                    <h2 className="headline-display mt-2 text-3xl font-semibold">
+                      {service?.name ?? 'Unmapped service'}
+                    </h2>
                     <p className="mt-2 text-sm text-[var(--muted-foreground)]">
                       {formatDateTime(appointment.start_time)}
                     </p>
@@ -67,9 +87,22 @@ export function AppointmentsPage() {
                 </div>
 
                 <div className="mt-6 grid gap-3 md:grid-cols-3">
-                  <InfoTile label="Patient" value={patient?.name ?? `Patient #${appointment.patient_id}`} />
-                  <InfoTile label="Provider" value={provider?.name ?? `Provider #${appointment.provider_id}`} />
-                  <InfoTile label="Event Sync" value={appointment.external_event_id ? 'Linked' : 'Pending'} />
+                  <InfoTile
+                    label="Patient"
+                    value={
+                      patient?.name ?? `Patient #${appointment.patient_id}`
+                    }
+                  />
+                  <InfoTile
+                    label="Provider"
+                    value={
+                      provider?.name ?? `Provider #${appointment.provider_id}`
+                    }
+                  />
+                  <InfoTile
+                    label="Event Sync"
+                    value={appointment.external_event_id ? 'Linked' : 'Pending'}
+                  />
                 </div>
               </CardContent>
             </Card>

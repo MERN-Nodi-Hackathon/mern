@@ -21,7 +21,8 @@ export function SignInPage() {
 
   useEffect(() => {
     if (user) {
-      const target = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
+      const target = (location.state as { from?: { pathname?: string } } | null)
+        ?.from?.pathname;
       navigate(target ?? '/dashboard', { replace: true });
     }
   }, [location.state, navigate, user]);
@@ -30,7 +31,9 @@ export function SignInPage() {
     event.preventDefault();
 
     if (!isConfigured) {
-      setError('Set the Supabase URL and publishable key in apps/web/.env.local first.');
+      setError(
+        'Set the Supabase URL and publishable key in apps/web/.env.local first.',
+      );
       return;
     }
 
@@ -42,7 +45,9 @@ export function SignInPage() {
       navigate('/dashboard', { replace: true });
     } catch (signInError) {
       setError(
-        signInError instanceof Error ? signInError.message : 'Unable to sign in with Supabase.',
+        signInError instanceof Error
+          ? signInError.message
+          : 'Unable to sign in with Supabase.',
       );
     } finally {
       setSubmitting(false);
@@ -62,8 +67,9 @@ export function SignInPage() {
                 A clinic dashboard that already feels staffed.
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--muted-foreground)]">
-                This starter is built for a hackathon team: React, Vite, Tailwind, Supabase auth,
-                routed admin modules, SQL migrations, Edge Functions, and seeded scheduling data.
+                This starter is built for a hackathon team: React, Vite,
+                Tailwind, Supabase auth, routed admin modules, SQL migrations,
+                Edge Functions, and seeded scheduling data.
               </p>
             </div>
 
@@ -71,10 +77,12 @@ export function SignInPage() {
               <Card className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none">
                 <CardContent className="space-y-3 p-6">
                   <ShieldCheck className="size-5 text-[var(--color-moss)]" />
-                  <h2 className="headline-display text-3xl font-semibold">Team-ready access</h2>
+                  <h2 className="headline-display text-3xl font-semibold">
+                    Team-ready access
+                  </h2>
                   <p className="text-sm leading-6 text-[var(--muted-foreground)]">
-                    Staff accounts use Supabase Auth and row-level security. Patients stay
-                    account-less in the MVP.
+                    Staff accounts use Supabase Auth and row-level security.
+                    Patients stay account-less in the MVP.
                   </p>
                 </CardContent>
               </Card>
@@ -82,10 +90,12 @@ export function SignInPage() {
               <Card className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none">
                 <CardContent className="space-y-3 p-6">
                   <KeyRound className="size-5 text-[var(--color-moss)]" />
-                  <h2 className="headline-display text-3xl font-semibold">Hosted-first flow</h2>
+                  <h2 className="headline-display text-3xl font-semibold">
+                    Hosted-first flow
+                  </h2>
                   <p className="text-sm leading-6 text-[var(--muted-foreground)]">
-                    Add the shared Supabase credentials, invite one staff user, and teammates can
-                    start building immediately.
+                    Add the shared Supabase credentials, invite one staff user,
+                    and teammates can start building immediately.
                   </p>
                 </CardContent>
               </Card>
@@ -95,11 +105,15 @@ export function SignInPage() {
 
         <section className="editorial-card flex rounded-[2rem] p-8 md:p-10">
           <div className="m-auto w-full max-w-md">
-            <p className="eyebrow text-[11px] text-[var(--muted)]">Staff Sign-In</p>
-            <h2 className="headline-display mt-3 text-5xl font-semibold">Enter the floor.</h2>
+            <p className="eyebrow text-[11px] text-[var(--muted)]">
+              Staff Sign-In
+            </p>
+            <h2 className="headline-display mt-3 text-5xl font-semibold">
+              Enter the floor.
+            </h2>
             <p className="mt-4 text-[var(--muted-foreground)]">
-              Use a Supabase Auth user created for your hackathon team. After sign-in, the profile
-              trigger links you to the default clinic.
+              Use a Supabase Auth user created for your hackathon team. After
+              sign-in, the profile trigger links you to the default clinic.
             </p>
 
             {!isConfigured ? (
@@ -107,8 +121,8 @@ export function SignInPage() {
                 <CardContent className="p-6">
                   <p className="font-semibold">Missing local environment</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--muted-foreground)]">
-                    Copy `apps/web/.env.example` to `apps/web/.env.local`, keep the provided
-                    publishable values, and restart `npm run dev`.
+                    Copy `apps/web/.env.example` to `apps/web/.env.local`, keep
+                    the provided publishable values, and restart `npm run dev`.
                   </p>
                 </CardContent>
               </Card>

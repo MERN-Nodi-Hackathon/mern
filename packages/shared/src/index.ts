@@ -112,6 +112,12 @@ export type Patient = z.infer<typeof PatientSchema>;
 export type Appointment = z.infer<typeof AppointmentSchema>;
 export type AvailabilitySlot = z.infer<typeof AvailabilitySlotSchema>;
 export type PatientIdentity = z.infer<typeof PatientIdentitySchema>;
-export type CreateAppointmentInput = z.infer<typeof CreateAppointmentInputSchema>;
-export type RescheduleAppointmentInput = z.infer<typeof RescheduleAppointmentInputSchema>;
-export type CancelAppointmentInput = z.infer<typeof CancelAppointmentInputSchema>;
+export type CreateAppointmentInput = z.infer<
+  typeof CreateAppointmentInputSchema
+>;
+export type RescheduleAppointmentInput = z.infer<
+  typeof RescheduleAppointmentInputSchema
+>;
+export type CancelAppointmentInput = z.infer<
+  typeof CancelAppointmentInputSchema
+>;

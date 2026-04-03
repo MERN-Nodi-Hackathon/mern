@@ -37,8 +37,12 @@ export function AppShell() {
               <Hospital className="size-6" />
             </div>
             <div>
-              <p className="eyebrow text-[11px] text-[var(--muted)]">Hackathon Build</p>
-              <h1 className="headline-display text-3xl font-semibold">Clinic Ops</h1>
+              <p className="eyebrow text-[11px] text-[var(--muted)]">
+                Hackathon Build
+              </p>
+              <h1 className="headline-display text-3xl font-semibold">
+                Clinic Ops
+              </h1>
             </div>
           </div>
 
@@ -80,13 +84,20 @@ export function AppShell() {
                 {({ isActive }) => (
                   <>
                     <span className="flex items-center gap-3">
-                      <Icon className={cn('size-4', !isActive && 'text-[var(--color-moss)]')} />
+                      <Icon
+                        className={cn(
+                          'size-4',
+                          !isActive && 'text-[var(--color-moss)]',
+                        )}
+                      />
                       <span className="font-medium">{label}</span>
                     </span>
                     <span
                       className={cn(
                         'size-2 rounded-full transition',
-                        isActive ? 'bg-[var(--color-gold)]' : 'bg-[rgba(18,32,24,0.16)]',
+                        isActive
+                          ? 'bg-[var(--color-gold)]'
+                          : 'bg-[rgba(18,32,24,0.16)]',
                       )}
                     />
                   </>
@@ -109,9 +120,12 @@ export function AppShell() {
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0">
-                <p className="truncate font-semibold">{profile?.full_name ?? 'Hackathon teammate'}</p>
+                <p className="truncate font-semibold">
+                  {profile?.full_name ?? 'Hackathon teammate'}
+                </p>
                 <p className="truncate text-sm text-[var(--muted)]">
-                  {profile?.email ?? 'Connect Supabase auth to see your profile'}
+                  {profile?.email ??
+                    'Connect Supabase auth to see your profile'}
                 </p>
               </div>
             </div>
@@ -131,8 +145,12 @@ export function AppShell() {
           <div className="flex min-h-[calc(100vh-2rem)] flex-col">
             <header className="flex flex-col gap-4 border-b border-[var(--border)] px-6 py-5 md:flex-row md:items-center md:justify-between md:px-8">
               <div>
-                <p className="eyebrow text-[11px] text-[var(--muted)]">Operations Workspace</p>
-                <h2 className="headline-display mt-2 text-4xl font-semibold">Scheduling, grounded.</h2>
+                <p className="eyebrow text-[11px] text-[var(--muted)]">
+                  Operations Workspace
+                </p>
+                <h2 className="headline-display mt-2 text-4xl font-semibold">
+                  Scheduling, grounded.
+                </h2>
               </div>
               <div className="flex items-center gap-3">
                 <Badge className="rounded-full border border-[var(--border)] bg-white px-4 py-1 text-[var(--color-pine)]">

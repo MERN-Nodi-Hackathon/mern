@@ -56,7 +56,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ['apps/web/src/components/ui/**/*.{ts,tsx}', 'apps/web/src/lib/supabase/auth-context.tsx'],
+    files: [
+      'apps/web/src/components/ui/**/*.{ts,tsx}',
+      'apps/web/src/lib/supabase/auth-context.tsx',
+    ],
     rules: {
       'react-refresh/only-export-components': 'off',
     },

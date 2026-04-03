@@ -2,7 +2,10 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { corsHeaders } from '../_shared/cors.ts';
 import { createCalendarAdapter } from '../_shared/adapters.ts';
-import { createServiceClient, hasServiceRoleConfig } from '../_shared/supabase.ts';
+import {
+  createServiceClient,
+  hasServiceRoleConfig,
+} from '../_shared/supabase.ts';
 
 type BookingIntent = 'availability' | 'book' | 'reschedule' | 'cancel';
 
@@ -43,10 +46,15 @@ Deno.serve(async (request) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
-  if (request.headers.get('content-type')?.includes('application/x-www-form-urlencoded')) {
+  if (
+    request.headers
+      .get('content-type')
+      ?.includes('application/x-www-form-urlencoded')
+  ) {
     return json({
       status: 'received',
-      message: 'Twilio webhook received. Switch to the JSON booking contract to exercise booking-flow.',
+      message:
+        'Twilio webhook received. Switch to the JSON booking contract to exercise booking-flow.',
     });
   }
 
@@ -60,7 +68,8 @@ Deno.serve(async (request) => {
       if (intent === 'availability') {
         return json({
           status: 'preview',
-          message: 'Supabase service role is not configured. Returning mock availability.',
+          message:
+            'Supabase service role is not configured. Returning mock availability.',
           candidateSlots: await calendar.listAvailability({
             clinicId,
             providerId: payload.providerId,
@@ -72,7 +81,8 @@ Deno.serve(async (request) => {
 
       return json({
         status: 'preview',
-        message: 'Supabase service role is not configured. Booking flow is running in mock mode.',
+        message:
+          'Supabase service role is not configured. Booking flow is running in mock mode.',
       });
     }
 
@@ -96,7 +106,10 @@ Deno.serve(async (request) => {
     }
 
     if (intent === 'cancel') {
-      ensure(payload.appointmentId, 'appointmentId is required to cancel an appointment.');
+      ensure(
+        payload.appointmentId,
+        'appointmentId is required to cancel an appointment.',
+      );
 
       const { data: appointment, error: appointmentError } = await supabase
         .from('appointments')
@@ -140,21 +153,23 @@ Deno.serve(async (request) => {
     ensure(payload.providerId, 'providerId is required.');
     ensure(payload.serviceId, 'serviceId is required.');
 
-    const [{ data: provider, error: providerError }, { data: service, error: serviceError }] =
-      await Promise.all([
-        supabase
-          .from('providers')
-          .select('id, clinic_id, name, specialization, calendar_id')
-          .eq('id', payload.providerId)
-          .eq('clinic_id', clinicId)
-          .single(),
-        supabase
-          .from('services')
-          .select('id, clinic_id, name, duration_min')
-          .eq('id', payload.serviceId)
-          .eq('clinic_id', clinicId)
-          .single(),
-      ]);
+    const [
+      { data: provider, error: providerError },
+      { data: service, error: serviceError },
+    ] = await Promise.all([
+      supabase
+        .from('providers')
+        .select('id, clinic_id, name, specialization, calendar_id')
+        .eq('id', payload.providerId)
+        .eq('clinic_id', clinicId)
+        .single(),
+      supabase
+        .from('services')
+        .select('id, clinic_id, name, duration_min')
+        .eq('id', payload.serviceId)
+        .eq('clinic_id', clinicId)
+        .single(),
+    ]);
 
     if (providerError || !provider) {
       throw providerError ?? new Error('Provider not found.');
@@ -238,14 +253,18 @@ Deno.serve(async (request) => {
     }
 
     ensure(intent === 'reschedule', 'Unsupported booking intent.');
-    ensure(payload.appointmentId, 'appointmentId is required to reschedule an appointment.');
+    ensure(
+      payload.appointmentId,
+      'appointmentId is required to reschedule an appointment.',
+    );
 
-    const { data: currentAppointment, error: currentAppointmentError } = await supabase
-      .from('appointments')
-      .select('*, patient:patients(id, name, phone)')
-      .eq('id', payload.appointmentId)
-      .eq('clinic_id', clinicId)
-      .single();
+    const { data: currentAppointment, error: currentAppointmentError } =
+      await supabase
+        .from('appointments')
+        .select('*, patient:patients(id, name, phone)')
+        .eq('id', payload.appointmentId)
+        .eq('clinic_id', clinicId)
+        .single();
 
     if (currentAppointmentError || !currentAppointment) {
       throw currentAppointmentError ?? new Error('Appointment not found.');
@@ -291,7 +310,10 @@ Deno.serve(async (request) => {
     return json(
       {
         status: 'error',
-        message: error instanceof Error ? error.message : 'Unexpected booking-flow error.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Unexpected booking-flow error.',
       },
       400,
     );

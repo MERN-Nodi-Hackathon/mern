@@ -2,7 +2,10 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { corsHeaders } from '../_shared/cors.ts';
 import { createReminderAdapter } from '../_shared/adapters.ts';
-import { createServiceClient, hasServiceRoleConfig } from '../_shared/supabase.ts';
+import {
+  createServiceClient,
+  hasServiceRoleConfig,
+} from '../_shared/supabase.ts';
 
 type RemindersRequest = {
   dryRun?: boolean;
@@ -25,7 +28,9 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const payload = (await request.json().catch(() => ({}))) as RemindersRequest;
+    const payload = (await request
+      .json()
+      .catch(() => ({}))) as RemindersRequest;
     const dryRun = payload.dryRun ?? true;
 
     if (!hasServiceRoleConfig()) {
@@ -39,7 +44,9 @@ Deno.serve(async (request) => {
 
     const supabase = createServiceClient();
     const notifier = createReminderAdapter();
-    const windowStart = new Date(Date.now() + 23 * 60 * 60 * 1000).toISOString();
+    const windowStart = new Date(
+      Date.now() + 23 * 60 * 60 * 1000,
+    ).toISOString();
     const windowEnd = new Date(Date.now() + 25 * 60 * 60 * 1000).toISOString();
 
     let query = supabase
@@ -98,7 +105,10 @@ Deno.serve(async (request) => {
   } catch (error) {
     return json(
       {
-        message: error instanceof Error ? error.message : 'Unexpected reminder execution error.',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Unexpected reminder execution error.',
       },
       400,
     );

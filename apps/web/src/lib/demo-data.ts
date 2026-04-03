@@ -1,4 +1,10 @@
-import type { Appointment, Clinic, Patient, Provider, Service } from '@mern/shared';
+import type {
+  Appointment,
+  Clinic,
+  Patient,
+  Provider,
+  Service,
+} from '@mern/shared';
 
 function toIso(date: Date) {
   return date.toISOString();

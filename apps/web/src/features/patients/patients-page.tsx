@@ -16,15 +16,24 @@ export function PatientsPage() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         {patients.map((patient) => {
-          const visits = appointments.filter((appointment) => appointment.patient_id === patient.id);
+          const visits = appointments.filter(
+            (appointment) => appointment.patient_id === patient.id,
+          );
 
           return (
-            <Card key={patient.id} className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none">
+            <Card
+              key={patient.id}
+              className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none"
+            >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="eyebrow text-[11px] text-[var(--muted)]">Patient #{patient.id}</p>
-                    <h2 className="headline-display mt-2 text-3xl font-semibold">{patient.name}</h2>
+                    <p className="eyebrow text-[11px] text-[var(--muted)]">
+                      Patient #{patient.id}
+                    </p>
+                    <h2 className="headline-display mt-2 text-3xl font-semibold">
+                      {patient.name}
+                    </h2>
                   </div>
                   <Badge className="rounded-full border border-[var(--border)] bg-white px-3 py-1 text-[var(--color-pine)]">
                     {visits.length} visits
@@ -33,7 +42,10 @@ export function PatientsPage() {
 
                 <div className="mt-6 grid gap-3 md:grid-cols-2">
                   <ContactTile label="Phone" value={patient.phone} />
-                  <ContactTile label="Email" value={patient.email ?? 'Not captured yet'} />
+                  <ContactTile
+                    label="Email"
+                    value={patient.email ?? 'Not captured yet'}
+                  />
                 </div>
               </CardContent>
             </Card>

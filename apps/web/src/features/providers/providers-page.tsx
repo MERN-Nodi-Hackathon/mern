@@ -16,16 +16,27 @@ export function ProvidersPage() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         {providers.map((provider) => {
-          const load = appointments.filter((appointment) => appointment.provider_id === provider.id).length;
+          const load = appointments.filter(
+            (appointment) => appointment.provider_id === provider.id,
+          ).length;
 
           return (
-            <Card key={provider.id} className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none">
+            <Card
+              key={provider.id}
+              className="editorial-card rounded-[1.75rem] border-[var(--border)] shadow-none"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="eyebrow text-[11px] text-[var(--muted)]">Provider #{provider.id}</p>
-                    <h2 className="headline-display mt-2 text-3xl font-semibold">{provider.name}</h2>
-                    <p className="mt-2 text-[var(--muted-foreground)]">{provider.specialization}</p>
+                    <p className="eyebrow text-[11px] text-[var(--muted)]">
+                      Provider #{provider.id}
+                    </p>
+                    <h2 className="headline-display mt-2 text-3xl font-semibold">
+                      {provider.name}
+                    </h2>
+                    <p className="mt-2 text-[var(--muted-foreground)]">
+                      {provider.specialization}
+                    </p>
                   </div>
                   <Badge className="rounded-full border border-[var(--border)] bg-[var(--color-blush)] px-3 py-1 text-[var(--color-pine)]">
                     {load} booked
@@ -33,7 +44,9 @@ export function ProvidersPage() {
                 </div>
 
                 <div className="mt-6 rounded-[1.5rem] border border-[var(--border)] bg-white/70 p-4">
-                  <p className="eyebrow text-[11px] text-[var(--muted)]">Calendar integration</p>
+                  <p className="eyebrow text-[11px] text-[var(--muted)]">
+                    Calendar integration
+                  </p>
                   <p className="mt-2 font-semibold">
                     {provider.calendar_id ?? 'Pending provider calendar ID'}
                   </p>
