@@ -103,14 +103,17 @@ Deno.serve(async (request) => {
       skipped,
     });
   } catch (error) {
-    return json(
-      {
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Unexpected reminder execution error.',
-      },
-      400,
-    );
-  }
+  console.error('REMINDER ERROR:', error);
+  return json(
+    {
+      message:
+        error instanceof Error
+          ? error.message
+          : 'Unexpected reminder execution error.',
+      detail: String(error),
+    },
+    400,
+  );
+}
+  
 });
