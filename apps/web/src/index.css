@@ -1,47 +1,83 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Manrope', sans-serif;
-  --font-serif: 'Newsreader', serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Inter', sans-serif;
 
-  --color-ink: #122018;
-  --color-moss: #294f43;
-  --color-pine: #14352d;
-  --color-sand: #f6f0e4;
-  --color-paper: #fffaf3;
-  --color-gold: #c3873d;
-  --color-blush: #f3dfcc;
-  --color-line: rgba(18, 32, 24, 0.12);
-  --color-background: #fffaf3;
-  --color-foreground: #122018;
-  --color-card: rgba(255, 250, 243, 0.82);
-  --color-card-foreground: #122018;
-  --color-primary: #14352d;
-  --color-primary-foreground: #fffaf3;
-  --color-secondary: #f3dfcc;
-  --color-secondary-foreground: #122018;
-  --color-accent: #f3dfcc;
-  --color-accent-foreground: #122018;
-  --color-muted: #efe7d7;
-  --color-muted-foreground: rgba(18, 32, 24, 0.72);
-  --color-border: rgba(18, 32, 24, 0.12);
-  --color-input: rgba(18, 32, 24, 0.12);
-  --color-ring: rgba(41, 79, 67, 0.32);
-  --color-destructive: #b5473d;
+  --color-background: #f7f9fb;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-inverse-on-surface: #eff1f3;
+  --color-inverse-primary: #b4c5ff;
+  --color-inverse-surface: #2d3133;
+  --color-on-background: #191c1e;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #eeefff;
+  --color-on-primary-fixed: #00174b;
+  --color-on-primary-fixed-variant: #003ea8;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #5c647a;
+  --color-on-secondary-fixed: #131b2e;
+  --color-on-secondary-fixed-variant: #3f465c;
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #434655;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #bdffdc;
+  --color-on-tertiary-fixed: #002114;
+  --color-on-tertiary-fixed-variant: #005137;
+  --color-outline: #737686;
+  --color-outline-variant: #c3c6d7;
+  --color-primary: #004ac6;
+  --color-primary-container: #2563eb;
+  --color-primary-fixed: #dbe1ff;
+  --color-primary-fixed-dim: #b4c5ff;
+  --color-secondary: #565e74;
+  --color-secondary-container: #dae2fd;
+  --color-secondary-fixed: #dae2fd;
+  --color-secondary-fixed-dim: #bec6e0;
+  --color-surface: #f7f9fb;
+  --color-surface-bright: #f7f9fb;
+  --color-surface-container: #eceef0;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-dim: #d8dadc;
+  --color-surface-tint: #0053db;
+  --color-surface-variant: #e0e3e5;
+  --color-tertiary: #006243;
+  --color-tertiary-container: #007d57;
+  --color-tertiary-fixed: #85f8c4;
+  --color-tertiary-fixed-dim: #68dba9;
+  
+  --color-card: var(--color-surface-container-highest);
+  --color-card-foreground: var(--color-on-surface);
+  --color-primary-foreground: var(--color-on-primary);
+  --color-secondary-foreground: var(--color-on-secondary);
+  --color-accent: var(--color-secondary-container);
+  --color-accent-foreground: var(--color-on-secondary-container);
+  --color-muted: var(--color-surface-dim);
+  --color-muted-foreground: var(--color-on-surface-variant);
+  --color-border: var(--color-outline-variant);
+  --color-input: var(--color-surface-container-highest);
+  --color-ring: var(--color-primary);
+  --color-destructive: var(--color-error);
 }
 
 :root {
-  --background: var(--color-paper);
-  --foreground: var(--color-ink);
-  --card: rgba(255, 250, 243, 0.76);
-  --card-strong: rgba(255, 250, 243, 0.94);
-  --muted: rgba(18, 32, 24, 0.64);
-  --muted-foreground: rgba(18, 32, 24, 0.72);
-  --border: rgba(18, 32, 24, 0.12);
-  --accent: var(--color-blush);
-  --accent-foreground: var(--color-ink);
-  --ring: rgba(41, 79, 67, 0.32);
+  --background: var(--color-background);
+  --foreground: var(--color-on-background);
+  --card: var(--color-surface-container-highest);
+  --card-strong: var(--color-surface-container-lowest);
+  --muted: var(--color-surface-dim);
+  --muted-foreground: var(--color-on-surface-variant);
+  --border: var(--color-outline-variant);
+  --accent: var(--color-secondary-container);
+  --accent-foreground: var(--color-on-secondary-container);
+  --ring: var(--color-primary);
 }
 
 * {
@@ -58,18 +94,7 @@ body {
   margin: 0;
   color: var(--foreground);
   font-family: var(--font-sans);
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(195, 135, 61, 0.14),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at top right,
-      rgba(41, 79, 67, 0.18),
-      transparent 24%
-    ),
-    linear-gradient(180deg, #fef8ef 0%, #f5eddc 100%);
+  background-color: var(--background);
 }
 
 body::before {
@@ -78,8 +103,8 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(18, 32, 24, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(18, 32, 24, 0.018) 1px, transparent 1px);
+    linear-gradient(rgba(204, 212, 222, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(204, 212, 222, 0.2) 1px, transparent 1px);
   background-size: 24px 24px;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 85%);
 }
@@ -106,7 +131,7 @@ input {
   content: '';
   position: absolute;
   inset: 1rem;
-  border: 1px solid rgba(18, 32, 24, 0.08);
+  border: none;
   border-radius: 2rem;
   pointer-events: none;
 }
@@ -114,10 +139,10 @@ input {
 .editorial-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: none;
   background: linear-gradient(180deg, var(--card-strong) 0%, var(--card) 100%);
   box-shadow:
-    0 24px 60px rgba(18, 32, 24, 0.08),
+    0 20px 50px rgba(0, 74, 198, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(20px);
 }
@@ -130,7 +155,7 @@ input {
   height: 7rem;
   background: radial-gradient(
     circle,
-    rgba(195, 135, 61, 0.18),
+    rgba(0, 74, 198, 0.10),
     transparent 70%
   );
   pointer-events: none;
