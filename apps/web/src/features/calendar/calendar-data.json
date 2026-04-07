@@ -1,0 +1,308 @@
+[
+  {
+    "id": "ev-p-001",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Roberto V.",
+    "detail": "Vía: Portal Web",
+    "date": "2026-04-01",
+    "hour": 9
+  },
+  {
+    "id": "ev-p-002",
+    "type": "ai_booking",
+    "label": "Reservado por IA",
+    "title": "Paciente: Carmen L.",
+    "detail": "Vía: IA-Web",
+    "date": "2026-04-02",
+    "hour": 8
+  },
+  {
+    "id": "ev-p-003",
+    "type": "internal",
+    "label": "Evento Interno",
+    "title": "Reunión Mensual",
+    "detail": "Sala Principal",
+    "date": "2026-04-02",
+    "hour": 11
+  },
+  {
+    "id": "ev-p-004",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Diego M.",
+    "detail": "Lugar: Consultorio C",
+    "date": "2026-04-03",
+    "hour": 10
+  },
+  {
+    "id": "ev-p-005",
+    "type": "blocked",
+    "label": "Bloqueado",
+    "title": "Mantenimiento",
+    "detail": "Fuera de servicio",
+    "date": "2026-04-03",
+    "hour": 14
+  },
+  {
+    "id": "ev-p-006",
+    "type": "ai_booking",
+    "label": "Reservado por IA",
+    "title": "Paciente: Isabel F.",
+    "detail": "Vía: IA-Web",
+    "date": "2026-04-04",
+    "hour": 9
+  },
+  {
+    "id": "ev-p-007",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Tomás R.",
+    "detail": "Lugar: Consultorio B",
+    "date": "2026-04-04",
+    "hour": 15
+  },
+  {
+    "id": "ev-001",
+    "type": "blocked",
+    "label": "Bloqueado",
+    "title": "Mantenimiento",
+    "detail": "Fuera de servicio",
+    "date": "2026-04-07",
+    "hour": 8
+  },
+  {
+    "id": "ev-002",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Carlos M.",
+    "detail": "Vía: Portal Web",
+    "date": "2026-04-07",
+    "hour": 9
+  },
+  {
+    "id": "ev-003",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Gloria P.",
+    "detail": "Lugar: Consultorio A",
+    "date": "2026-04-07",
+    "hour": 14
+  },
+  {
+    "id": "ev-004",
+    "type": "ai_booking",
+    "label": "Reservado por IA",
+    "title": "Paciente: Martha S.",
+    "detail": "Vía: IA-Web",
+    "date": "2026-04-08",
+    "hour": 8
+  },
+  {
+    "id": "ev-005",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: John D.",
+    "detail": "Vía: Recepción",
+    "date": "2026-04-08",
+    "hour": 9
+  },
+  {
+    "id": "ev-006",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Alex T.",
+    "detail": "Vía: App Móvil",
+    "date": "2026-04-08",
+    "hour": 13
+  },
+  {
+    "id": "ev-007",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Elena R.",
+    "detail": "Lugar: Consultorio B",
+    "date": "2026-04-09",
+    "hour": 9
+  },
+  {
+    "id": "ev-008",
+    "type": "ai_booking",
+    "label": "Proceso IA",
+    "title": "Tipo: Auto-asignación",
+    "detail": "Vía: Sistema",
+    "date": "2026-04-09",
+    "hour": 10
+  },
+  {
+    "id": "ev-009",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Patricia N.",
+    "detail": "Lugar: Consultorio D",
+    "date": "2026-04-09",
+    "hour": 16
+  },
+  {
+    "id": "ev-010",
+    "type": "ai_booking",
+    "label": "Reservado por IA",
+    "title": "Paciente: Sofía B.",
+    "detail": "Vía: IA-Web",
+    "date": "2026-04-10",
+    "hour": 8
+  },
+  {
+    "id": "ev-011",
+    "type": "internal",
+    "label": "Evento Interno",
+    "title": "Tipo: Reunión Staff",
+    "detail": "Lugar: Sala Juntas",
+    "date": "2026-04-10",
+    "hour": 9
+  },
+  {
+    "id": "ev-012",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Miguel R.",
+    "detail": "Vía: Portal Web",
+    "date": "2026-04-10",
+    "hour": 10
+  },
+  {
+    "id": "ev-013",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Ana Gómez",
+    "detail": "Lugar: Sala OR-2",
+    "date": "2026-04-11",
+    "hour": 8
+  },
+  {
+    "id": "ev-014",
+    "type": "blocked",
+    "label": "Bloqueado",
+    "title": "Sin disponibilidad",
+    "detail": "",
+    "date": "2026-04-11",
+    "hour": 11
+  },
+  {
+    "id": "ev-015",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Laura S.",
+    "detail": "Lugar: Consultorio A",
+    "date": "2026-04-11",
+    "hour": 13
+  },
+  {
+    "id": "ev-n-001",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: María P.",
+    "detail": "Vía: Portal Web",
+    "date": "2026-04-14",
+    "hour": 9
+  },
+  {
+    "id": "ev-n-002",
+    "type": "internal",
+    "label": "Evento Interno",
+    "title": "Capacitación IA",
+    "detail": "Aula Principal",
+    "date": "2026-04-14",
+    "hour": 11
+  },
+  {
+    "id": "ev-n-003",
+    "type": "ai_booking",
+    "label": "Reservado por IA",
+    "title": "Paciente: José M.",
+    "detail": "Vía: IA-Web",
+    "date": "2026-04-15",
+    "hour": 10
+  },
+  {
+    "id": "ev-n-004",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Luisa V.",
+    "detail": "Lugar: Consultorio B",
+    "date": "2026-04-15",
+    "hour": 14
+  },
+  {
+    "id": "ev-n-005",
+    "type": "blocked",
+    "label": "Bloqueado",
+    "title": "Mantenimiento",
+    "detail": "",
+    "date": "2026-04-16",
+    "hour": 8
+  },
+  {
+    "id": "ev-n-006",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Andrés K.",
+    "detail": "Lugar: Consultorio C",
+    "date": "2026-04-16",
+    "hour": 9
+  },
+  {
+    "id": "ev-n-007",
+    "type": "ai_booking",
+    "label": "Reservado por IA",
+    "title": "Paciente: Ana B.",
+    "detail": "Vía: IA-Web",
+    "date": "2026-04-16",
+    "hour": 15
+  },
+  {
+    "id": "ev-n-008",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Sofía L.",
+    "detail": "Lugar: Consultorio C",
+    "date": "2026-04-17",
+    "hour": 8
+  },
+  {
+    "id": "ev-n-009",
+    "type": "internal",
+    "label": "Evento Interno",
+    "title": "Revisión Trimestral",
+    "detail": "Sala Principal",
+    "date": "2026-04-17",
+    "hour": 10
+  },
+  {
+    "id": "ev-n-010",
+    "type": "booking",
+    "label": "Reservación",
+    "title": "Paciente: Fernando H.",
+    "detail": "Vía: Recepción",
+    "date": "2026-04-18",
+    "hour": 9
+  },
+  {
+    "id": "ev-n-011",
+    "type": "ai_booking",
+    "label": "Reservado por IA",
+    "title": "Paciente: Valentina R.",
+    "detail": "Vía: IA-Web",
+    "date": "2026-04-18",
+    "hour": 13
+  },
+  {
+    "id": "ev-n-012",
+    "type": "blocked",
+    "label": "Bloqueado",
+    "title": "Sin disponibilidad",
+    "detail": "",
+    "date": "2026-04-18",
+    "hour": 16
+  }
+]
