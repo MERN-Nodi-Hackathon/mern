@@ -9,6 +9,9 @@ import {
   Bot, 
   History 
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function CalendarPage() {
   return (
@@ -21,87 +24,89 @@ export function CalendarPage() {
           </h1>
           <div className="flex items-center gap-4 text-on-surface-variant mt-4">
             <div className="flex items-center bg-surface-container-low p-1 rounded-xl">
-              <button className="p-2 hover:bg-white rounded-lg transition-colors">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-on-surface-variant hover:bg-white">
                 <ChevronLeft className="w-5 h-5" />
-              </button>
+              </Button>
               <span className="px-4 font-semibold text-on-surface text-sm">Oct 14 — 20, 2024</span>
-              <button className="p-2 hover:bg-white rounded-lg transition-colors">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-on-surface-variant hover:bg-white">
                 <ChevronRight className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
-            <button className="px-4 py-2 font-medium text-primary hover:bg-primary/5 text-sm rounded-xl transition-colors">
+            <Button variant="ghost" className="font-medium text-primary hover:bg-primary/5 text-sm rounded-xl">
               Hoy
-            </button>
+            </Button>
           </div>
         </div>
         <div className="flex items-center gap-2 bg-surface-container-low p-1.5 rounded-xl">
-          <button className="px-5 py-1.5 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+          <Button variant="ghost" className="px-5 py-1.5 text-sm font-semibold text-slate-500 hover:text-slate-900 rounded-lg">
             Día
-          </button>
-          <button className="px-5 py-1.5 text-sm font-bold bg-white text-primary rounded-lg shadow-sm">
+          </Button>
+          <Button variant="outline" className="px-5 py-1.5 text-sm font-bold bg-white text-primary rounded-lg border-none hover:bg-white hover:text-primary shadow-sm h-9">
             Semana
-          </button>
-          <button className="px-5 py-1.5 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+          </Button>
+          <Button variant="ghost" className="px-5 py-1.5 text-sm font-semibold text-slate-500 hover:text-slate-900 rounded-lg">
             Mes
-          </button>
+          </Button>
         </div>
       </section>
 
       {/* Stats/Legend Bento Row */}
       <section className="grid grid-cols-12 gap-6">
         {/* AI Summary Card */}
-        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-[0_20px_50px_rgba(5,150,105,0.05)] border-l-4 border-primary">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <h3 className="font-bold text-on-surface">Optimización de IA Activa</h3>
+        <Card className="col-span-12 lg:col-span-8 bg-surface-container-lowest border-0 rounded-xl shadow-[0_20px_50px_rgba(5,150,105,0.05)] border-l-4 border-l-primary">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <h3 className="font-bold text-on-surface">Optimización de IA Activa</h3>
+                </div>
+                <p className="text-sm text-on-surface-variant max-w-xl">
+                  VitalAgent ha reprogramado automáticamente 4 citas para minimizar huecos y predijo 2 cancelaciones potenciales para el jueves por la mañana.
+                </p>
               </div>
-              <p className="text-sm text-on-surface-variant max-w-xl">
-                VitalAgent ha reprogramado automáticamente 4 citas para minimizar huecos y predijo 2 cancelaciones potenciales para el jueves por la mañana.
-              </p>
-            </div>
-            <div className="flex -space-x-2">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNh6zQos8TlthLbROaCAnxdg9SEfEcn8Wd874BiYM7gO5RvGEVa23PanwxE3d_pBhJLgevuGHh6KgnKxpCNDhAPsbAltpOCYL_PGXBESWJzoSEIDb_4JanlevRFrAHOFeAYw9yvyYQvF-XwynyPla9d1QrEsrsaYNs2SPQGWnXlCSiPsCLh1HpLk1wabSidBjnt0aW6bUjQTS9cbInmXjIUFS8eiR9coBQ90W-St25ajx90YhkdqeQCkOv_VdeSJ6TI3UZ_lGd-7lO"
-                alt="Dra. Sarah"
-                className="w-8 h-8 rounded-full border-2 border-white object-cover"
-              />
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYpJ7ThrcWG7vyks8cT2PSWdwB1zxMQl56Hvh62_xMdqlrWUt8CVl_hYcbUtEmml2ROemznrr_alDaOFo9lnxONXI8IS871ADM_cfq4JB66bQfzksD_H-V1yqTSx4QMd4gdRmzD5fomLYawiEEQh-_57QbvDQTQMqNqW0jB6mBDRYCtnpHlGS5g8EgygfsywylsU61jBp2ewv9uSfhpFpXkUr005UJjQbuG2dNC1hhcv-pocP7NuXn2Ht-1qvAwLVxvC9vczXr7YS2"
-                alt="Dr. James"
-                className="w-8 h-8 rounded-full border-2 border-white object-cover"
-              />
-              <div className="w-8 h-8 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[10px] font-bold text-primary">
-                +8
+              <div className="flex -space-x-2">
+                <Avatar className="w-8 h-8 border-2 border-white">
+                  <AvatarImage src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNh6zQos8TlthLbROaCAnxdg9SEfEcn8Wd874BiYM7gO5RvGEVa23PanwxE3d_pBhJLgevuGHh6KgnKxpCNDhAPsbAltpOCYL_PGXBESWJzoSEIDb_4JanlevRFrAHOFeAYw9yvyYQvF-XwynyPla9d1QrEsrsaYNs2SPQGWnXlCSiPsCLh1HpLk1wabSidBjnt0aW6bUjQTS9cbInmXjIUFS8eiR9coBQ90W-St25ajx90YhkdqeQCkOv_VdeSJ6TI3UZ_lGd-7lO" alt="Dra. Sarah" />
+                  <AvatarFallback className="text-[10px]">DS</AvatarFallback>
+                </Avatar>
+                <Avatar className="w-8 h-8 border-2 border-white">
+                  <AvatarImage src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYpJ7ThrcWG7vyks8cT2PSWdwB1zxMQl56Hvh62_xMdqlrWUt8CVl_hYcbUtEmml2ROemznrr_alDaOFo9lnxONXI8IS871ADM_cfq4JB66bQfzksD_H-V1yqTSx4QMd4gdRmzD5fomLYawiEEQh-_57QbvDQTQMqNqW0jB6mBDRYCtnpHlGS5g8EgygfsywylsU61jBp2ewv9uSfhpFpXkUr005UJjQbuG2dNC1hhcv-pocP7NuXn2Ht-1qvAwLVxvC9vczXr7YS2" alt="Dr. James" />
+                  <AvatarFallback className="text-[10px]">DJ</AvatarFallback>
+                </Avatar>
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[10px] font-bold text-primary z-10 relative">
+                  +8
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Legend Card */}
-        <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-6 shadow-[0_20px_50px_rgba(5,150,105,0.05)] flex items-center justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full border border-outline-variant bg-white"></div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Disponible</span>
+        <Card className="col-span-12 lg:col-span-4 bg-surface-container-lowest border-0 rounded-xl shadow-[0_20px_50px_rgba(5,150,105,0.05)]">
+          <CardContent className="p-6 flex items-center justify-between h-full">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full border border-outline-variant bg-white"></div>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Disponible</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-primary-container"></div>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Reservado por IA</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-slate-200"></div>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Bloqueado</span>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-primary-container"></div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Reservado por IA</span>
+            <div className="text-right">
+              <div className="text-3xl font-black text-primary">84%</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Carga Semanal
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-slate-200"></div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Bloqueado</span>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-3xl font-black text-primary">84%</div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Carga Semanal
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Main Calendar Grid Container */}
@@ -290,40 +295,46 @@ export function CalendarPage() {
 
       {/* Quick Actions Footer Bento */}
       <section className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-surface-container-lowest p-5 rounded-xl flex items-center gap-4 hover:shadow-[0_20px_50px_rgba(5,150,105,0.06)] transition-all cursor-pointer">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <Download className="w-6 h-6" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-on-surface">Exportar Registro</h4>
-            <p className="text-[11px] text-on-surface-variant">Generar PDF para facturación de seguros</p>
-          </div>
-        </div>
-        <div className="bg-surface-container-lowest p-5 rounded-xl flex items-center gap-4 hover:shadow-[0_20px_50px_rgba(5,150,105,0.06)] transition-all cursor-pointer">
-          <div className="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
-            <Bot className="w-6 h-6" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-on-surface">Ejecutar Optimización</h4>
-            <p className="text-[11px] text-on-surface-variant">Reasignación por IA de espacios pendientes</p>
-          </div>
-        </div>
-        <div className="bg-surface-container-lowest p-5 rounded-xl flex items-center gap-4 hover:shadow-[0_20px_50px_rgba(5,150,105,0.06)] transition-all cursor-pointer">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <History className="w-6 h-6" />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-on-surface">Historial Paciente</h4>
-            <p className="text-[11px] text-on-surface-variant">Vista rápida de interacciones de hoy</p>
-          </div>
-        </div>
+        <Card className="bg-surface-container-lowest border-0 rounded-xl hover:shadow-[0_20px_50px_rgba(5,150,105,0.06)] transition-all cursor-pointer">
+          <CardContent className="p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <Download className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-on-surface">Exportar Registro</h4>
+              <p className="text-[11px] text-on-surface-variant">Generar PDF para facturación de seguros</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-surface-container-lowest border-0 rounded-xl hover:shadow-[0_20px_50px_rgba(5,150,105,0.06)] transition-all cursor-pointer">
+          <CardContent className="p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+              <Bot className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-on-surface">Ejecutar Optimización</h4>
+              <p className="text-[11px] text-on-surface-variant">Reasignación por IA de espacios pendientes</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-surface-container-lowest border-0 rounded-xl hover:shadow-[0_20px_50px_rgba(5,150,105,0.06)] transition-all cursor-pointer">
+          <CardContent className="p-5 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <History className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-on-surface">Historial Paciente</h4>
+              <p className="text-[11px] text-on-surface-variant">Vista rápida de interacciones de hoy</p>
+            </div>
+          </CardContent>
+        </Card>
       </section>
       
       {/* Floating Action for Mobile / Quick Context */}
       <div className="fixed bottom-8 right-8 z-50 md:hidden">
-        <button className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-[0_20px_50px_rgba(5,150,105,0.3)] hover:scale-110 transition-transform active:scale-95">
+        <Button size="icon" className="w-14 h-14 bg-primary text-white rounded-full shadow-[0_20px_50px_rgba(5,150,105,0.3)] hover:scale-110 transition-transform active:scale-95">
           <Sparkles className="w-6 h-6" />
-        </button>
+        </Button>
       </div>
 
     </div>
