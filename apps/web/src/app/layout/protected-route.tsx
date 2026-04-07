@@ -7,8 +7,8 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--background)] px-6 text-[var(--foreground)]">
-        <p className="eyebrow text-sm text-[var(--muted-foreground)]">
+      <div className="flex min-h-screen items-center justify-center bg-(--background) px-6 text-(--foreground)">
+        <p className="eyebrow text-sm text-(--muted-foreground)">
           Cargando configuración...
         </p>
       </div>

@@ -3,7 +3,24 @@ import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '@/app/layout/app-shell';
 import { ProtectedRoute } from '@/app/layout/protected-route';
 
+import { LandingPage } from '@/features/landing/landing-page';
+import { LoginPage } from '@/features/auth/login-page';
+import { DashboardPage } from '@/features/dashboard/dashboard-page';
+import { CalendarPage } from '@/features/calendar/calendar-page';
+import { AgentPage } from '@/features/agent/agent-page';
+import { PatientPage } from '@/features/patient/patient-page';
+import { PersonalPage } from '@/features/personal/personal-page';
+import { SettingsPage } from '@/features/settings/settings-page';
+
 export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <LandingPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
   {
     path: '/',
     element: (
@@ -13,14 +30,28 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
-        element: (
-          <div className="flex h-full min-h-[60vh] items-center justify-center p-8 text-center text-[var(--foreground)]">
-            <h1 className="headline-display text-4xl font-semibold">
-              Espacio de trabajo en blanco
-            </h1>
-          </div>
-        ),
+        path: 'dashboard',
+        element: <DashboardPage />,
+      },
+      {
+        path: 'calendar',
+        element: <CalendarPage />,
+      },
+      {
+        path: 'agent',
+        element: <AgentPage />,
+      },
+      {
+        path: 'patient',
+        element: <PatientPage />,
+      },
+      {
+        path: 'personal',
+        element: <PersonalPage />,
+      },
+      {
+        path: 'settings',
+        element: <SettingsPage />,
       },
     ],
   },
