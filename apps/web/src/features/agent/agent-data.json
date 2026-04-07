@@ -1,0 +1,55 @@
+{
+  "identity": {
+    "greetingMessage": "¡Hola! Soy su VitalAgent. ¿Cómo puedo ayudarle con su salud hoy?",
+    "timezone": "America/Mexico_City",
+    "tone": "empathetic",
+    "language": "es"
+  },
+  "metrics": {
+    "hceStatus": "connected",
+    "avgLatencyMs": 240,
+    "modelVersion": "VitalAgent v2.4",
+    "uptime": "99.8%"
+  },
+  "toneOptions": [
+    { "value": "empathetic", "label": "Empático y Clínico (Recomendado)" },
+    { "value": "direct",     "label": "Directo y Conciso" },
+    { "value": "warm",       "label": "Cálido y Amigable" },
+    { "value": "formal",     "label": "Formal y Profesional" }
+  ],
+  "timezoneOptions": [
+    { "value": "America/Mexico_City", "label": "CDMX (UTC-6)" },
+    { "value": "America/Bogota",      "label": "Bogotá (UTC-5)" },
+    { "value": "America/Lima",        "label": "Lima (UTC-5)" },
+    { "value": "America/Santiago",    "label": "Santiago (UTC-4)" },
+    { "value": "America/New_York",    "label": "EST (UTC-5)" },
+    { "value": "America/Los_Angeles", "label": "PST (UTC-8)" },
+    { "value": "Europe/Madrid",       "label": "Madrid (UTC+1)" }
+  ],
+  "languageOptions": [
+    { "value": "es", "label": "Español" },
+    { "value": "en", "label": "English" },
+    { "value": "pt", "label": "Português" }
+  ],
+  "previewConversation": [
+    {
+      "id": "msg-1",
+      "role": "bot",
+      "text": "¡Hola! Soy su VitalAgent. ¿Cómo puedo ayudarle con su salud hoy?"
+    },
+    {
+      "id": "msg-2",
+      "role": "user",
+      "text": "Me gustaría programar una cita de seguimiento con el Dr. Sánchez para mi recuperación de cirugía de rodilla."
+    },
+    {
+      "id": "msg-3",
+      "role": "bot",
+      "text": "Veo que el Dr. Sánchez tiene disponibilidad para un chequeo postoperatorio la próxima semana. ¿Cuál de estos horarios le conviene más?",
+      "options": [
+        { "id": "opt-1", "label": "Martes, 14 Abr @ 9:00 AM" },
+        { "id": "opt-2", "label": "Miércoles, 15 Abr @ 2:30 PM" }
+      ]
+    }
+  ]
+}
