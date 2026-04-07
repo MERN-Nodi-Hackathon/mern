@@ -1,6 +1,6 @@
 interface PageHeaderProps {
   title: string;
-  description: string;
+  description?: string;
   action?: React.ReactNode;
 }
 
@@ -13,7 +13,9 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
     <div className="flex justify-between items-end border-b border-outline-variant/10 pb-6 mb-8">
       <div>
         <h2 className="text-3xl font-extrabold tracking-tight text-on-surface">{title}</h2>
-        <p className="text-on-surface-variant mt-1 text-lg">{description}</p>
+        {description && (
+          <p className="text-on-surface-variant mt-1 text-lg">{description}</p>
+        )}
       </div>
       {action && <div>{action}</div>}
     </div>

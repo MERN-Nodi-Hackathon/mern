@@ -1,28 +1,30 @@
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Sparkles, 
-  Lock, 
-  PlusCircle, 
-  Utensils, 
-  Download, 
-  Bot, 
-  History 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  Lock,
+  PlusCircle,
+  Utensils,
+  Download,
+  Bot,
+  History
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PageHeader } from '@/components/ui/page-header';
 
 export function CalendarPage() {
   return (
     <div className="flex flex-col gap-8 w-full max-w-[1600px] mx-auto">
       {/* Calendar Header Section */}
-      <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface mb-2">
-            Vista General del Horario
-          </h1>
-          <div className="flex items-center gap-4 text-on-surface-variant mt-4">
+          <PageHeader
+            title="Vista General del Horario"
+            description=""
+          />
+          <div className="flex items-center gap-4 text-on-surface-variant -mt-6">
             <div className="flex items-center bg-surface-container-low p-1 rounded-xl">
               <Button variant="ghost" size="icon" className="h-8 w-8 text-on-surface-variant hover:bg-white">
                 <ChevronLeft className="w-5 h-5" />
@@ -38,17 +40,11 @@ export function CalendarPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 bg-surface-container-low p-1.5 rounded-xl">
-          <Button variant="ghost" className="px-5 py-1.5 text-sm font-semibold text-slate-500 hover:text-slate-900 rounded-lg">
-            Día
-          </Button>
-          <Button variant="outline" className="px-5 py-1.5 text-sm font-bold bg-white text-primary rounded-lg border-none hover:bg-white hover:text-primary shadow-sm h-9">
-            Semana
-          </Button>
-          <Button variant="ghost" className="px-5 py-1.5 text-sm font-semibold text-slate-500 hover:text-slate-900 rounded-lg">
-            Mes
-          </Button>
+          <Button variant="ghost" className="px-5 py-1.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface rounded-lg">Día</Button>
+          <Button variant="outline" className="px-5 py-1.5 text-sm font-bold bg-white text-primary rounded-lg border-none hover:bg-white hover:text-primary shadow-sm h-9">Semana</Button>
+          <Button variant="ghost" className="px-5 py-1.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface rounded-lg">Mes</Button>
         </div>
-      </section>
+      </div>
 
       {/* Stats/Legend Bento Row */}
       <section className="grid grid-cols-12 gap-6">
@@ -87,21 +83,21 @@ export function CalendarPage() {
           <CardContent className="p-6 flex items-center justify-between h-full">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full border border-outline-variant bg-white"></div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Disponible</span>
+                <div className="w-3 h-3 rounded-full border border-outline-variant bg-white" />
+                <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Disponible</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-primary-container"></div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Reservado por IA</span>
+                <div className="w-3 h-3 rounded-full bg-primary-container" />
+                <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Reservado por IA</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-slate-200"></div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Bloqueado</span>
+                <div className="w-3 h-3 rounded-full bg-surface-container-high" />
+                <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Bloqueado</span>
               </div>
             </div>
             <div className="text-right">
               <div className="text-3xl font-black text-primary">84%</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
                 Carga Semanal
               </div>
             </div>
