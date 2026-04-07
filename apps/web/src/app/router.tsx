@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/app/layout/protected-route';
 
 import { LandingPage } from '@/features/landing/landing-page';
 import { LoginPage } from '@/features/auth/login-page';
+import { TermsPage } from '@/features/legal/terms-page';
 import { DashboardPage } from '@/features/dashboard/dashboard-page';
 import { CalendarPage } from '@/features/calendar/calendar-page';
 import { AgentPage } from '@/features/agent/agent-page';
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/terms',
+    element: <TermsPage />,
   },
   {
     path: '/',
