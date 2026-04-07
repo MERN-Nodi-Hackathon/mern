@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Users,
   CheckCircle2,
@@ -23,23 +23,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
-import patientData from './patient-data.json';
+import { getPatients, getPatientStats } from '@/services/patient.service';
+import { Patient, PatientStats, PatientCategory } from '@/types/models';
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
-
-type Category = 'all' | 'general' | 'chronic' | 'urgent';
-
-interface Patient {
-  id: string;
-  name: string;
-  photoUrl: string;
-  age: number;
-  category: string;
-  lastVisit: { date: string; reason: string };
-  nextVisit: { date: string; status: string };
-  email: string;
-  phone: string;
-}
+// ─── Tipos Locales (Si se requieren) ──────────────────────────────────────────
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
@@ -52,7 +39,7 @@ const STAT_ICONS = {
   new:       { icon: Sparkles,     colorClass: 'bg-emerald-50 text-primary' },
 };
 
-const CATEGORY_FILTERS: { value: Category; label: string }[] = [
+const CATEGORY_FILTERS: { value: PatientCategory; label: string }[] = [
   { value: 'all',     label: 'Todos' },
   { value: 'general', label: 'General' },
   { value: 'chronic', label: 'Crónicos' },
@@ -170,21 +157,37 @@ function PatientRow({ patient }: { patient: Patient }) {
 // ─── Componente principal ──────────────────────────────────────────────────────
 
 export function PatientPage() {
-  const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [activeCategory, setActiveCategory] = useState<PatientCategory>('all');
   const [searchQuery, setSearchQuery]       = useState('');
   const [currentPage, setCurrentPage]       = useState(1);
+  const [isLoading, setIsLoading]           = useState(true);
 
-  const allPatients = patientData.patients as Patient[];
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [stats, setStats]       = useState<PatientStats[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const [patientsData, statsData] = await Promise.all([
+        getPatients(),
+        getPatientStats()
+      ]);
+      setPatients(patientsData);
+      setStats(statsData);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, []);
 
   // Filtrado: por categoría + búsqueda por nombre o ID
   const filteredPatients = useMemo(() => {
-    return allPatients.filter((p) => {
+    return patients.filter((p) => {
       const matchCategory = activeCategory === 'all' || p.category === activeCategory;
       const q = searchQuery.toLowerCase();
       const matchSearch = !q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
       return matchCategory && matchSearch;
     });
-  }, [allPatients, activeCategory, searchQuery]);
+  }, [patients, activeCategory, searchQuery]);
 
   // Paginación
   const totalPages  = Math.max(1, Math.ceil(filteredPatients.length / PAGE_SIZE));
@@ -192,7 +195,7 @@ export function PatientPage() {
   const paginated   = filteredPatients.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   // Reiniciar página al filtrar
-  function handleCategory(cat: Category) {
+  function handleCategory(cat: PatientCategory) {
     setActiveCategory(cat);
     setCurrentPage(1);
   }
@@ -216,19 +219,25 @@ export function PatientPage() {
 
       {/* ── Stat Cards ────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {patientData.stats.map((s) => {
-          const meta = STAT_ICONS[s.id as keyof typeof STAT_ICONS];
-          return (
-            <StatCard
-              key={s.id}
-              icon={meta.icon}
-              iconColorClass={meta.colorClass}
-              label={s.label}
-              value={s.value}
-              badge={<p className="text-xs text-on-surface-variant font-medium">{s.sub}</p>}
-            />
-          );
-        })}
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="h-32 animate-pulse bg-surface-container-low border-0 rounded-3xl" />
+          ))
+        ) : (
+          stats.map((s) => {
+            const meta = STAT_ICONS[s.id as keyof typeof STAT_ICONS];
+            return (
+              <StatCard
+                key={s.id}
+                icon={meta.icon}
+                iconColorClass={meta.colorClass}
+                label={s.label}
+                value={s.value}
+                badge={<p className="text-xs text-on-surface-variant font-medium">{s.sub}</p>}
+              />
+            );
+          })
+        )}
       </div>
 
       {/* ── Tabla de pacientes ────────────────────────────────────────────────── */}
@@ -244,7 +253,7 @@ export function PatientPage() {
                 return (
                   <button
                     key={value}
-                    onClick={() => handleCategory(value)}
+                    onClick={() => handleCategory(value as PatientCategory)}
                     aria-pressed={isActive}
                     className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
                       isActive
@@ -303,16 +312,23 @@ export function PatientPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/10">
-              {paginated.length > 0
-                ? paginated.map((p) => <PatientRow key={p.id} patient={p} />)
-                : (
-                  <tr>
-                    <td colSpan={6} className="py-16 text-center text-sm text-on-surface-variant/50 italic">
-                      No se encontraron pacientes con ese criterio.
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td colSpan={6} className="px-6 py-8">
+                      <div className="h-10 bg-surface-container-low rounded-xl w-full"></div>
                     </td>
                   </tr>
-                )
-              }
+                ))
+              ) : paginated.length > 0 ? (
+                paginated.map((p) => <PatientRow key={p.id} patient={p} />)
+              ) : (
+                <tr>
+                  <td colSpan={6} className="py-16 text-center text-sm text-on-surface-variant/50 italic">
+                    No se encontraron pacientes con ese criterio.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

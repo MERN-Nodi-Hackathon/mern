@@ -20,7 +20,10 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import data from '@/features/settings/user-company-data.json';
+import { getCurrentUser, getCompanyInfo, logout } from '@/services/auth.service';
+import { getNotifications } from '@/services/clinic.service';
+import { Clinic, User, InboxNotification } from '@/types/models';
+import { useEffect } from 'react';
 
 const navigation = [
   { to: '/dashboard', label: 'Inicio', icon: LayoutDashboard },
@@ -37,7 +40,26 @@ export function AppShell() {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  
+  const [clinic, setClinic] = useState<Clinic | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [notifications, setNotifications] = useState<InboxNotification[]>([]);
+  
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [companyData, userData, notifsData] = await Promise.all([
+        getCompanyInfo(),
+        getCurrentUser(),
+        getNotifications()
+      ]);
+      setClinic(companyData); // Resolved any cast
+      setUser(userData);
+      setNotifications(notifsData);
+    };
+    fetchData();
+  }, []);
 
   const searchablePages = [
     ...navigation,
@@ -48,8 +70,8 @@ export function AppShell() {
     page.label.toLowerCase().includes(searchQuery.toLowerCase()) && searchQuery.length > 0
   );
 
-  const handleLogout = () => {
-    // Aquí iría la lógica de logout real
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -70,9 +92,9 @@ export function AppShell() {
       )}>
         <div className="mb-10 px-2 flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold tracking-tighter text-on-surface">{data.clinic.brandName}</h1>
+            <h1 className="text-xl font-bold tracking-tighter text-on-surface">{clinic?.brandName || '...'}</h1>
             <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-              {data.clinic.slogan}
+              {clinic?.slogan || 'Cargando...'}
             </p>
           </div>
           <button 
@@ -166,7 +188,7 @@ export function AppShell() {
                   isNotificationsOpen ? "bg-primary/10 text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
                 )}
               >
-                <Bell className="w-5 h-5 flex-shrink-0" />
+                <Bell className="w-5 h-5 shrink-0" />
                 <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-error border-2 border-surface shadow-sm"></span>
               </button>
 
@@ -175,14 +197,16 @@ export function AppShell() {
                 <div className="absolute top-full right-0 mt-3 w-80 bg-surface-container-lowest rounded-3xl shadow-[0_30px_60px_rgba(5,150,105,0.2)] border border-outline-variant/10 overflow-hidden z-50 p-2">
                   <div className="px-4 py-3 flex justify-between items-center border-b border-outline-variant/5">
                     <span className="font-bold text-xs text-on-surface">Notificaciones</span>
-                    <span className="text-[10px] font-black uppercase tracking-tighter text-primary">3 Nuevas</span>
+                    <span className="text-[10px] font-black uppercase tracking-tighter text-primary">
+                      {notifications.filter(n => !n.isRead).length} Nuevas
+                    </span>
                   </div>
                   <div className="max-h-72 overflow-y-auto">
-                    {data.inbox.map((notif) => (
+                    {notifications.map((notif) => (
                       <div key={notif.id} className="p-3 rounded-2xl hover:bg-surface-container-low transition-all group">
                         <div className="flex gap-3">
                           <div className={cn(
-                            "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
+                            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
                             notif.isRead ? "bg-surface-container-high" : "bg-primary/10 text-primary"
                           )}>
                             {notif.isRead ? <Clock className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
@@ -207,13 +231,13 @@ export function AppShell() {
                 className="flex items-center gap-2.5 p-1 px-2 rounded-xl hover:bg-surface-container-high transition-all"
               >
                 <img
-                  src={data.user.photoUrl}
+                  src={user?.photoUrl || 'https://via.placeholder.com/150'}
                   alt="Avatar"
                   className="h-8 w-8 rounded-lg object-cover ring-2 ring-primary/10"
                 />
                 <div className="hidden sm:block text-left">
                   <p className="text-xs font-bold text-on-surface flex items-center gap-1">
-                    Buenos días, {data.user.firstName}
+                    Buenos días, {user?.firstName || '...'}
                     <ChevronDown className="w-3.5 h-3.5 opacity-40" />
                   </p>
                 </div>
@@ -223,8 +247,8 @@ export function AppShell() {
               {isProfileOpen && (
                 <div className="absolute top-full right-0 mt-3 w-48 bg-surface-container-lowest rounded-2xl shadow-[0_30px_60px_rgba(5,150,105,0.2)] border border-outline-variant/10 overflow-hidden z-50 p-1.5">
                   <div className="px-3 py-2 border-b border-outline-variant/5 mb-1">
-                    <p className="text-[11px] font-bold text-on-surface">{data.user.fullName}</p>
-                    <p className="text-[10px] text-on-surface-variant truncate">{data.user.role}</p>
+                    <p className="text-[11px] font-bold text-on-surface">{user?.fullName || 'Cargando...'}</p>
+                    <p className="text-[10px] text-on-surface-variant truncate">{user?.role || '...'}</p>
                   </div>
                   <button
                     onClick={handleLogout}

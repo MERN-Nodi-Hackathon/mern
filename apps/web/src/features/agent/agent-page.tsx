@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   BadgeCheck,
   Zap,
@@ -16,20 +16,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
 import { PageHeader } from '@/components/ui/page-header';
-import agentData from './agent-data.json';
+import { getAgentIdentity, getAgentMetrics, getPreviewConversation } from '@/services/agent.service';
+import { ChatMessage, AgentIdentity, AgentMetrics } from '@/types/models';
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
-
-interface PreviewMessage {
-  id: string;
-  role: 'bot' | 'user';
-  text: string;
-  options?: { id: string; label: string }[];
-}
+// ─── Tipos Locales ────────────────────────────────────────────────────────────
 
 // ─── Sub-componentes ──────────────────────────────────────────────────────────
 
-function BotMessage({ msg }: { msg: PreviewMessage }) {
+function BotMessage({ msg }: { msg: ChatMessage }) {
   return (
     <div className="flex gap-3 max-w-[88%]">
       {/* Avatar del agente */}
@@ -59,7 +53,7 @@ function BotMessage({ msg }: { msg: PreviewMessage }) {
   );
 }
 
-function UserMessage({ msg }: { msg: PreviewMessage }) {
+function UserMessage({ msg }: { msg: ChatMessage }) {
   return (
     <div className="flex gap-3 max-w-[88%] ml-auto flex-row-reverse">
       {/* Avatar del usuario */}
@@ -76,15 +70,41 @@ function UserMessage({ msg }: { msg: PreviewMessage }) {
 // ─── Componente principal ──────────────────────────────────────────────────────
 
 export function AgentPage() {
-  // Estado del formulario de configuración
-  const [greeting, setGreeting] = useState(agentData.identity.greetingMessage);
-  const [timezone, setTimezone] = useState(agentData.identity.timezone);
-  const [tone, setTone] = useState(agentData.identity.tone);
-  const [language, setLanguage] = useState(agentData.identity.language);
-  const [saved, setSaved] = useState(false);
+  const [identity, setIdentity] = useState<AgentIdentity | null>(null);
+  const [metrics, setMetrics]   = useState<AgentMetrics | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [saved, setSaved]       = useState(false);
 
-  // Preview: usa los mensajes del JSON
-  const messages = agentData.previewConversation as PreviewMessage[];
+  // Estados locales editables del formulario
+  const [greeting, setGreeting] = useState('');
+  const [timezone, setTimezone] = useState('');
+  const [tone, setTone]         = useState('');
+  const [language, setLanguage] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const [idData, metricsData, convData] = await Promise.all([
+        getAgentIdentity(),
+        getAgentMetrics(),
+        getPreviewConversation()
+      ]);
+      
+      setIdentity(idData);
+      setMetrics(metricsData);
+      setMessages(convData);
+
+      // Inicializar form
+      setGreeting(idData.greetingMessage);
+      setTimezone(idData.timezone);
+      setTone(idData.tone);
+      setLanguage(idData.language);
+      
+      setIsLoading(false);
+    };
+    fetchData();
+  }, []);
 
   function handleSave() {
     // TODO: POST /api/agent/config con { greeting, timezone, tone, language }
@@ -148,11 +168,10 @@ export function AgentPage() {
                       onChange={(e) => setTimezone(e.target.value)}
                       className="bg-surface-container-highest/50 border-0 rounded-xl p-3 h-auto focus-visible:ring-primary/20"
                     >
-                      {agentData.timezoneOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
+                      <option value="America/Mexico_City">Mexico City (CST)</option>
+                      <option value="America/New_York">New York (EST)</option>
+                      <option value="Europe/Madrid">Madrid (CET)</option>
+                      <option value="UTC">UTC</option>
                     </Select>
                   </div>
 
@@ -169,11 +188,9 @@ export function AgentPage() {
                       onChange={(e) => setLanguage(e.target.value)}
                       className="bg-surface-container-highest/50 border-0 rounded-xl p-3 h-auto focus-visible:ring-primary/20"
                     >
-                      {agentData.languageOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
+                      <option value="es">Español (ES)</option>
+                      <option value="en">English (US)</option>
+                      <option value="pt">Português (BR)</option>
                     </Select>
                   </div>
                 </div>
@@ -192,11 +209,9 @@ export function AgentPage() {
                     onChange={(e) => setTone(e.target.value)}
                     className="bg-surface-container-highest/50 border-0 rounded-xl p-3 h-auto focus-visible:ring-primary/20"
                   >
-                    {agentData.toneOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
+                    <option value="professional">Profesional y Empático</option>
+                    <option value="concise">Directo y Conciso</option>
+                    <option value="friendly">Cercano y Amigable</option>
                   </Select>
                 </div>
               </div>
@@ -229,7 +244,7 @@ export function AgentPage() {
               <div className="flex items-center gap-1">
                 {/* Indicador de modelo */}
                 <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50 mr-3">
-                  {agentData.metrics.modelVersion}
+                  {metrics?.modelVersion || 'Cargando...'}
                 </span>
                 <Button
                   variant="ghost"

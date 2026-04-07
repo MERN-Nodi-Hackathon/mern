@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   CalendarCheck,
   TrendingUp,
@@ -6,7 +7,8 @@ import {
   MessageSquare,
   Send,
   FileText,
-  Lightbulb
+  Lightbulb,
+  Bot
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,49 +16,45 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
-
-const ACTIVITY_ROWS = [
-  {
-    initials: 'SM',
-    name: 'Sarah Mitchell',
-    avatarClass: 'bg-primary-fixed text-primary',
-    badgeClass: 'bg-tertiary-container/10 text-tertiary-container',
-    badgeLabel: 'Gestionado por IA',
-    time: 'hace 2 min',
-  },
-  {
-    initials: 'JR',
-    name: 'James Rodriguez',
-    avatarClass: 'bg-secondary-container text-secondary',
-    badgeClass: 'bg-secondary-container/30 text-on-secondary-fixed-variant',
-    badgeLabel: 'En Consulta',
-    time: 'hace 14 min',
-  },
-  {
-    initials: 'EL',
-    name: 'Elena Laine',
-    avatarClass: 'bg-primary-fixed text-primary',
-    badgeClass: 'bg-tertiary-container/10 text-tertiary-container',
-    badgeLabel: 'Reserva Confirmada',
-    time: 'hace 28 min',
-  },
-  {
-    initials: 'TB',
-    name: 'Thomas Burke',
-    avatarClass: 'bg-error-container/20 text-error',
-    badgeClass: 'bg-error-container text-on-error-container',
-    badgeLabel: 'Acción Requerida',
-    time: 'hace 1 hora',
-  },
-];
-
-const AI_THREADS = [
-  { icon: MessageSquare, label: 'Análisis de Consultas', active: true },
-  { icon: Send, label: 'Agenda Inteligente', active: true },
-  { icon: FileText, label: 'Admisión de Pacientes', active: false },
-];
+import { getDashboardStats, getRecentActivity, getAIPulse } from '../../services/dashboard.service';
+import { DashboardStats, RecentActivity, AIPulseMetric, AIThread } from '@/types/models';
 
 export function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [activity, setActivity] = useState<RecentActivity[]>([]);
+  const [pulse, setPulse] = useState<{ metrics: AIPulseMetric[], threads: AIThread[] } | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const [s, a, p] = await Promise.all([
+        getDashboardStats(),
+        getRecentActivity(),
+        getAIPulse()
+      ]);
+      setStats(s);
+      setActivity(a);
+      setPulse(p);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-8">
+        <div className="h-20 animate-pulse bg-surface-container-low rounded-3xl w-full" />
+        <div className="grid grid-cols-3 gap-6">
+          {[1,2,3].map(i => <div key={i} className="h-32 animate-pulse bg-surface-container-low rounded-3xl" />)}
+        </div>
+        <div className="grid grid-cols-3 gap-8">
+          <div className="col-span-2 h-96 animate-pulse bg-surface-container-low rounded-3xl" />
+          <div className="h-96 animate-pulse bg-surface-container-low rounded-3xl" />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
@@ -70,10 +68,10 @@ export function DashboardPage() {
           icon={CalendarCheck}
           iconColorClass="bg-primary/10 text-primary"
           label="Total Citas Hoy"
-          value={42}
+          value={stats?.todayAppointments || 0}
           badge={
             <Badge variant="secondary" className="bg-tertiary-container/10 text-tertiary-container hover:bg-tertiary-container/20 border-none font-bold">
-              +12% vs ayer
+              {stats?.appointmentGrowth}
             </Badge>
           }
         />
@@ -81,7 +79,7 @@ export function DashboardPage() {
           icon={TrendingUp}
           iconColorClass="bg-tertiary-container/10 text-tertiary-container"
           label="Tasa de Conversión IA"
-          value="89.4%"
+          value={stats?.aiConversionRate || '0%'}
           badge={
             <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-none font-bold">
               Optimizado
@@ -92,10 +90,10 @@ export function DashboardPage() {
           icon={Building2}
           iconColorClass="bg-secondary-container/20 text-secondary"
           label="Consultorios Activos"
-          value="08"
+          value={stats?.activeClinics || 0}
           badge={
             <Badge variant="secondary" className="bg-outline-variant/20 text-on-surface-variant hover:bg-outline-variant/30 border-none font-bold">
-              3 Ubicaciones
+              {stats?.locationsCount} Ubicaciones
             </Badge>
           }
         />
@@ -123,7 +121,7 @@ export function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/10">
-                {ACTIVITY_ROWS.map((row) => (
+                {activity.map((row) => (
                   <tr key={row.name} className="hover:bg-surface-container-high transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -188,10 +186,11 @@ export function DashboardPage() {
                 <div className="border-t border-outline-variant/10 pt-4 mt-2">
                   <p className="text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-4">Hilos Activos</p>
                   <div className="space-y-3">
-                    {AI_THREADS.map(({ icon: Icon, label, active }) => (
+                    {pulse?.threads.map(({ label, active }) => (
                       <div key={label} className={`flex items-center justify-between ${!active ? 'opacity-50' : ''}`}>
                         <div className="flex items-center gap-3">
-                          <Icon className={`w-4 h-4 ${active ? 'text-primary' : 'text-outline'}`} />
+                          {/* Use dynamic icon components if mapping is needed, for now just simple icon */}
+                          <Bot className={`w-4 h-4 ${active ? 'text-primary' : 'text-outline'}`} />
                           <span className="text-xs font-medium">{label}</span>
                         </div>
                         <span className="text-[10px] text-on-surface-variant uppercase">

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   RotateCw,
   Stethoscope,
@@ -20,26 +20,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
-import personnelData from './personal-data.json';
+import { getMedicalTeam, getStaffShifts, getAISuggestions, getStaffStats } from '@/services/staff.service';
+import { StaffMember, StaffShift, AISuggestion, StaffStatus } from '@/types/models';
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
-
-type PersonnelStatus = 'all' | 'available' | 'busy' | 'away';
-
-interface Doctor {
-  id: string;
-  name: string;
-  specialty: string;
-  status: 'available' | 'busy' | 'away';
-  statusLabel: string;
-  consultorio: string;
-  nextTurno?: string;
-  timeLeft?: string;
-  returnDate?: string;
-  urgentAvailable?: boolean;
-  photoUrl: string;
-  initials: string;
-}
+// ─── Tipos Locales ────────────────────────────────────────────────────────────
 
 // ─── Constantes y Mapeos ──────────────────────────────────────────────────────
 
@@ -72,8 +56,8 @@ const SHIFT_TYPE_CONFIG = {
 
 // ─── Sub-componente: Tarjeta de Médico ────────────────────────────────────────
 
-function DoctorCard({ doctor }: { doctor: Doctor }) {
-  const config    = STATUS_CONFIG[doctor.status];
+function DoctorCard({ doctor }: { doctor: StaffMember }) {
+  const config    = STATUS_CONFIG[doctor.status] || STATUS_CONFIG.away;
   const isInactive = doctor.status === 'away';
 
   return (
@@ -150,10 +134,32 @@ function DoctorCard({ doctor }: { doctor: Doctor }) {
 // ─── Componente Principal ─────────────────────────────────────────────────────
 
 export function PersonalPage() {
-  const [activeFilter, setActiveFilter] = useState<PersonnelStatus>('all');
+  const [activeFilter, setActiveFilter] = useState<StaffStatus | 'all'>('all');
   const [searchQuery, setSearchQuery]   = useState('');
+  const [isLoading, setIsLoading]       = useState(true);
 
-  const personnel = personnelData.doctors as Doctor[];
+  const [personnel, setPersonnel]       = useState<StaffMember[]>([]);
+  const [shifts, setShifts]             = useState<StaffShift[]>([]);
+  const [suggestions, setSuggestions]   = useState<AISuggestion[]>([]);
+  const [stats, setStats]               = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const [teamData, shiftsData, suggsData, statsData] = await Promise.all([
+        getMedicalTeam(),
+        getStaffShifts(),
+        getAISuggestions(),
+        getStaffStats()
+      ]);
+      setPersonnel(teamData);
+      setShifts(shiftsData);
+      setSuggestions(suggsData);
+      setStats(statsData);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, []);
 
   const filteredTeam = useMemo(() => {
     return personnel.filter((doc) => {
@@ -194,7 +200,7 @@ export function PersonalPage() {
 
           {/* Filtros de estado */}
           <div className="flex items-center gap-2">
-            {(['all', 'available', 'busy', 'away'] as PersonnelStatus[]).map((f) => {
+            {(['all', 'available', 'busy', 'away'] as (StaffStatus | 'all')[]).map((f) => {
               const isActive = activeFilter === f;
               const labels = { all: 'Todos', available: 'Disponibles', busy: 'En Consulta', away: 'Fuera' };
               return (
@@ -215,7 +221,11 @@ export function PersonalPage() {
 
           {/* Grid de Doctores */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredTeam.length > 0 ? (
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i} className="h-64 animate-pulse bg-surface-container-low border-0 rounded-3xl" />
+              ))
+            ) : filteredTeam.length > 0 ? (
               filteredTeam.map((doc) => <DoctorCard key={doc.id} doctor={doc} />)
             ) : (
               <div className="col-span-full py-20 text-center bg-surface-container-low/20 rounded-3xl border-2 border-dashed border-outline-variant/10">
@@ -236,35 +246,41 @@ export function PersonalPage() {
               </Button>
             </div>
             <div className="grid gap-3">
-              {personnelData.shifts.map((shift) => {
-                const config = SHIFT_TYPE_CONFIG[shift.dayType as keyof typeof SHIFT_TYPE_CONFIG] || SHIFT_TYPE_CONFIG.morning;
-                return (
-                  <div key={shift.id} className="flex items-center justify-between p-5 bg-surface-container-lowest rounded-2xl hover:bg-surface-container transition-all group shadow-sm border border-outline-variant/5">
-                    <div className="flex items-center space-x-5">
-                      <div className={`w-12 h-12 rounded-xl ${config.color} flex items-center justify-center font-black text-sm tracking-wider shadow-sm`}>
-                        {shift.dayLabel}
-                      </div>
-                      <div>
-                        <p className={`text-[15px] font-bold text-on-surface ${config.hover} transition-colors`}>{shift.title}</p>
-                        <p className="text-[13px] text-on-surface-variant/70 mt-1 font-medium">{shift.subtitle}</p>
-                      </div>
-                    </div>
-                    <div className="flex -space-x-3">
-                      {shift.avatars.map((src, i) => (
-                        <Avatar key={i} className="w-10 h-10 border-2 border-surface-container-lowest hover:z-20 transition-transform hover:scale-110 shadow-sm">
-                          <AvatarImage src={src} className="object-cover" />
-                          <AvatarFallback className="bg-surface-container" />
-                        </Avatar>
-                      ))}
-                      {shift.overflow && (
-                        <div className="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center text-[11px] font-black text-on-surface-variant z-10 shadow-sm">
-                          {shift.overflow}
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-20 animate-pulse bg-surface-container-lowest rounded-2xl border border-outline-variant/5" />
+                ))
+              ) : (
+                shifts.map((shift) => {
+                  const config = SHIFT_TYPE_CONFIG[shift.dayType as keyof typeof SHIFT_TYPE_CONFIG] || SHIFT_TYPE_CONFIG.morning;
+                  return (
+                    <div key={shift.id} className="flex items-center justify-between p-5 bg-surface-container-lowest rounded-2xl hover:bg-surface-container transition-all group shadow-sm border border-outline-variant/5">
+                      <div className="flex items-center space-x-5">
+                        <div className={`w-12 h-12 rounded-xl ${config.color} flex items-center justify-center font-black text-sm tracking-wider shadow-sm`}>
+                          {shift.dayLabel}
                         </div>
-                      )}
+                        <div>
+                          <p className={`text-[15px] font-bold text-on-surface ${config.hover} transition-colors`}>{shift.title}</p>
+                          <p className="text-[13px] text-on-surface-variant/70 mt-1 font-medium">{shift.subtitle}</p>
+                        </div>
+                      </div>
+                      <div className="flex -space-x-3">
+                        {shift.avatars.map((src, i) => (
+                          <Avatar key={i} className="w-10 h-10 border-2 border-surface-container-lowest hover:z-20 transition-transform hover:scale-110 shadow-sm">
+                            <AvatarImage src={src} className="object-cover" />
+                            <AvatarFallback className="bg-surface-container" />
+                          </Avatar>
+                        ))}
+                        {shift.overflow && (
+                          <div className="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center text-[11px] font-black text-on-surface-variant z-10 shadow-sm">
+                            {shift.overflow}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
         </section>
@@ -279,7 +295,7 @@ export function PersonalPage() {
               <div>
                 <h4 className="font-bold text-lg text-on-surface leading-tight">Gestión IA</h4>
                 <p className="text-[10px] uppercase font-black text-primary tracking-widest mt-1">
-                  {personnelData.stats.modelVersion}
+                  {stats?.modelVersion || 'Cargando...'}
                 </p>
               </div>
             </div>
@@ -287,48 +303,54 @@ export function PersonalPage() {
             <div className="bg-primary/5 rounded-2xl p-5 mb-8 border border-primary/10 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
               <p className="text-sm text-on-surface/90 leading-relaxed font-medium pl-2 italic">
-                "{personnelData.agentInsight}"
+                "{stats?.agentInsight || 'Analizando eficiencia del equipo...'}"
               </p>
             </div>
 
             <h5 className="text-[11px] font-black uppercase tracking-wider text-on-surface-variant/40 mb-6 px-1">Optimizaciones Sugeridas</h5>
 
             <div className="space-y-4">
-              {personnelData.aiSuggestions.map((s) => (
-                <div key={s.id} className="p-5 rounded-3xl bg-surface-container-lowest border border-outline-variant/15 shadow-sm hover:border-primary/40 transition-all">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Zap className="w-3.5 h-3.5 text-primary" />
-                    <span className="text-[11px] font-bold text-primary uppercase tracking-wider">{s.type}</span>
+              {isLoading ? (
+                Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="h-32 animate-pulse bg-surface-container-lowest border border-outline-variant/15 rounded-3xl" />
+                ))
+              ) : (
+                suggestions.map((s) => (
+                  <div key={s.id} className="p-5 rounded-3xl bg-surface-container-lowest border border-outline-variant/15 shadow-sm hover:border-primary/40 transition-all">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Zap className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-[11px] font-bold text-primary uppercase tracking-wider">{s.type}</span>
+                    </div>
+                    <p className="text-[13px] text-on-surface leading-normal mb-5 font-medium">
+                      {s.body.split('**').map((part, i) => i % 2 === 1 ? <strong key={i} className="font-black text-primary">{part}</strong> : part)}
+                    </p>
+                    <div className="flex space-x-2">
+                      <Button className="flex-1 rounded-xl bg-primary text-white text-[11px] font-bold hover:bg-primary/90 h-9">
+                        {s.actionLabel}
+                      </Button>
+                      <Button variant="outline" size="icon" className="rounded-xl border-outline-variant/20 text-on-surface-variant hover:bg-red-50 hover:text-red-500 h-9 w-9">
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-[13px] text-on-surface leading-normal mb-5 font-medium">
-                    {s.body.split('**').map((part, i) => i % 2 === 1 ? <strong key={i} className="font-black text-primary">{part}</strong> : part)}
-                  </p>
-                  <div className="flex space-x-2">
-                    <Button className="flex-1 rounded-xl bg-primary text-white text-[11px] font-bold hover:bg-primary/90 h-9">
-                      {s.actionLabel}
-                    </Button>
-                    <Button variant="outline" size="icon" className="rounded-xl border-outline-variant/20 text-on-surface-variant hover:bg-red-50 hover:text-red-500 h-9 w-9">
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
 
             {/* Métricas de Eficiencia */}
             <div className="mt-10 pt-8 border-t border-outline-variant/10">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-sm font-bold text-on-surface">Eficiencia de Guardia</span>
-                <span className="text-2xl font-black text-primary tracking-tight">{personnelData.stats.teamEfficiency}%</span>
+                <span className="text-2xl font-black text-primary tracking-tight">{stats?.teamEfficiency || 0}%</span>
               </div>
               <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden p-0.5">
                 <div 
                   className="bg-primary h-full rounded-full shadow-[0_0_15px_rgba(5,150,105,0.3)] transition-all duration-1000" 
-                  style={{ width: `${personnelData.stats.teamEfficiency}%` }}
+                  style={{ width: `${stats?.teamEfficiency || 0}%` }}
                 />
               </div>
               <p className="text-[11px] font-bold text-on-surface-variant/50 mt-5 text-center">
-                ↑ {personnelData.stats.efficiencyIncrease}% vs. promedio histórico
+                ↑ {stats?.efficiencyIncrease || 0}% vs. promedio histórico
               </p>
             </div>
           </Card>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import type { CalendarEvent, EventType, FilterType } from './calendar.types';
-import rawEvents from './calendar-data.json';
+import { getEvents } from '@/services/calendar.service';
+import { CalendarEvent, EventType, FilterType } from '@/types/models';
 
 // ─── Constantes ────────────────────────────────────────────────────────────────
 
@@ -89,6 +89,8 @@ function EventCell({ event }: { event: CalendarEvent }) {
       'bg-primary-container text-white shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-transform',
     internal:
       'bg-primary-fixed text-on-primary-fixed border-l-4 border-primary cursor-pointer hover:opacity-90 transition-opacity',
+    confirmed:
+      'bg-emerald-500 text-white shadow-sm cursor-pointer hover:scale-[1.02] transition-transform',
   };
 
   return (
@@ -113,6 +115,18 @@ export function CalendarPage() {
 
   const [weekStart, setWeekStart] = useState<Date>(() => getWeekStart(today));
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [isLoading, setIsLoading] = useState(true);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const data = await getEvents();
+      setEvents(data);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, []);
 
   // Días visibles de la semana actual
   const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart]);
@@ -125,11 +139,11 @@ export function CalendarPage() {
   // Mapa de todos los eventos: "YYYY-MM-DD-HH" → CalendarEvent
   const eventsMap = useMemo(() => {
     const map = new Map<string, CalendarEvent>();
-    (rawEvents as CalendarEvent[]).forEach((ev) => {
+    events.forEach((ev) => {
       map.set(`${ev.date}-${ev.hour}`, ev);
     });
     return map;
-  }, []);
+  }, [events]);
 
   // Mapa filtrado: sólo los tipos activos
   const filteredEventsMap = useMemo(() => {
@@ -342,7 +356,9 @@ export function CalendarPage() {
                             : ''
                         }`}
                       >
-                        {event ? (
+                        {isLoading ? (
+                          <div className="h-20 animate-pulse bg-surface-container-low/30 rounded-lg" />
+                        ) : event ? (
                           <EventCell event={event} />
                         ) : (
                           <div className="min-h-20" />
