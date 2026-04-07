@@ -1,8 +1,8 @@
-import { 
-  BadgeCheck, 
-  Zap, 
-  Save, 
-  RefreshCw, 
+import {
+  BadgeCheck,
+  Zap,
+  Save,
+  RefreshCw,
   ExternalLink,
   Bot,
   User,
@@ -12,19 +12,15 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { PageHeader } from '@/components/ui/page-header';
 
 export function AgentPage() {
   return (
     <div className="flex flex-col gap-10 min-h-screen">
-      {/* Page Header */}
-      <header className="flex flex-col gap-2">
-        <h2 className="text-3xl font-extrabold tracking-tight text-on-surface">
-          Inteligencia del Agente IA
-        </h2>
-        <p className="text-on-surface-variant max-w-2xl text-lg">
-          Configure la identidad visual, el tono lingüístico y el comportamiento funcional del asistente médico digital de su clínica.
-        </p>
-      </header>
+      <PageHeader
+        title="Inteligencia del Agente IA"
+        description="Configure la identidad visual, el tono lingüístico y el comportamiento funcional del asistente médico digital de su clínica."
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Left Column: Agent Identity Form */}
