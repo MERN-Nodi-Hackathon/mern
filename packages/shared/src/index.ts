@@ -12,8 +12,8 @@ export const ClinicSchema = z.object({
   id: z.number().int(),
   name: z.string(),
   timezone: z.string(),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  created_at: z.string().datetime({ offset: true }).optional(),
+  updated_at: z.string().datetime({ offset: true }).optional(),
 });
 
 export const ProfileSchema = z.object({
@@ -22,8 +22,8 @@ export const ProfileSchema = z.object({
   email: z.string().email(),
   full_name: z.string().nullable().default(null),
   role: z.enum(['admin', 'staff']),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  created_at: z.string().datetime({ offset: true }).optional(),
+  updated_at: z.string().datetime({ offset: true }).optional(),
 });
 
 export const ProviderSchema = z.object({
@@ -32,8 +32,8 @@ export const ProviderSchema = z.object({
   name: z.string(),
   specialization: z.string(),
   calendar_id: z.string().nullable().default(null),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  created_at: z.string().datetime({ offset: true }).optional(),
+  updated_at: z.string().datetime({ offset: true }).optional(),
 });
 
 export const ServiceSchema = z.object({
@@ -41,8 +41,8 @@ export const ServiceSchema = z.object({
   clinic_id: z.number().int(),
   name: z.string(),
   duration_min: z.number().int().positive(),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  created_at: z.string().datetime({ offset: true }).optional(),
+  updated_at: z.string().datetime({ offset: true }).optional(),
 });
 
 export const PatientSchema = z.object({
@@ -51,8 +51,8 @@ export const PatientSchema = z.object({
   name: z.string(),
   phone: z.string(),
   email: z.string().email().nullable().default(null),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  created_at: z.string().datetime({ offset: true }).optional(),
+  updated_at: z.string().datetime({ offset: true }).optional(),
 });
 
 export const AppointmentSchema = z.object({
@@ -61,19 +61,19 @@ export const AppointmentSchema = z.object({
   patient_id: z.number().int(),
   provider_id: z.number().int(),
   service_id: z.number().int(),
-  start_time: z.string().datetime(),
-  end_time: z.string().datetime(),
+  start_time: z.string().datetime({ offset: true }),
+  end_time: z.string().datetime({ offset: true }),
   status: AppointmentStatusSchema,
   notes: z.string().nullable().default(null),
   external_event_id: z.string().nullable().default(null),
-  reminder_sent_at: z.string().datetime().nullable().default(null),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  reminder_sent_at: z.string().datetime({ offset: true }).nullable().default(null),
+  created_at: z.string().datetime({ offset: true }).optional(),
+  updated_at: z.string().datetime({ offset: true }).optional(),
 });
 
 export const AvailabilitySlotSchema = z.object({
-  start: z.string().datetime(),
-  end: z.string().datetime(),
+  start: z.string().datetime({ offset: true }),
+  end: z.string().datetime({ offset: true }),
   provider_id: z.number().int().optional(),
 });
 
@@ -87,15 +87,15 @@ export const CreateAppointmentInputSchema = z.object({
   patient_id: z.number().int(),
   provider_id: z.number().int(),
   service_id: z.number().int(),
-  start_time: z.string().datetime(),
-  end_time: z.string().datetime(),
+  start_time: z.string().datetime({ offset: true }),
+  end_time: z.string().datetime({ offset: true }),
   notes: z.string().optional(),
 });
 
 export const RescheduleAppointmentInputSchema = z.object({
   appointment_id: z.number().int(),
-  start_time: z.string().datetime(),
-  end_time: z.string().datetime(),
+  start_time: z.string().datetime({ offset: true }),
+  end_time: z.string().datetime({ offset: true }),
 });
 
 export const CancelAppointmentInputSchema = z.object({

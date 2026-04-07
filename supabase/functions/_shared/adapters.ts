@@ -245,10 +245,12 @@ class TwilioReminderAdapter implements ReminderAdapter {
 
     const auth = btoa(`${this.sid}:${this.token}`);
     const payload = new URLSearchParams({
-      To: input.phone,
-      From: this.from,
-      Body: input.body,
-    });
+  To: this.from.startsWith('whatsapp:') && !input.phone.startsWith('whatsapp:')
+    ? `whatsapp:${input.phone}`
+    : input.phone,
+  From: this.from,
+  Body: input.body,
+});
 
     const response = await fetch(
       `https://api.twilio.com/2010-04-01/Accounts/${this.sid}/Messages.json`,
