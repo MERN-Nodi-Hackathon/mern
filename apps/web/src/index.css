@@ -9,15 +9,15 @@
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
   --color-inverse-on-surface: #eff1f3;
-  --color-inverse-primary: #b4c5ff;
+  --color-inverse-primary: #6ee7b7;
   --color-inverse-surface: #2d3133;
   --color-on-background: #191c1e;
   --color-on-error: #ffffff;
   --color-on-error-container: #93000a;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #eeefff;
-  --color-on-primary-fixed: #00174b;
-  --color-on-primary-fixed-variant: #003ea8;
+  --color-on-primary-container: #ecfdf5;
+  --color-on-primary-fixed: #022c22;
+  --color-on-primary-fixed-variant: #064e3b;
   --color-on-secondary: #ffffff;
   --color-on-secondary-container: #5c647a;
   --color-on-secondary-fixed: #131b2e;
@@ -30,10 +30,10 @@
   --color-on-tertiary-fixed-variant: #005137;
   --color-outline: #737686;
   --color-outline-variant: #c3c6d7;
-  --color-primary: #004ac6;
-  --color-primary-container: #2563eb;
-  --color-primary-fixed: #dbe1ff;
-  --color-primary-fixed-dim: #b4c5ff;
+  --color-primary: #059669;
+  --color-primary-container: #059669;
+  --color-primary-fixed: #d1fae5;
+  --color-primary-fixed-dim: #6ee7b7;
   --color-secondary: #565e74;
   --color-secondary-container: #dae2fd;
   --color-secondary-fixed: #dae2fd;
@@ -46,7 +46,7 @@
   --color-surface-container-low: #f2f4f6;
   --color-surface-container-lowest: #ffffff;
   --color-surface-dim: #d8dadc;
-  --color-surface-tint: #0053db;
+  --color-surface-tint: #059669;
   --color-surface-variant: #e0e3e5;
   --color-tertiary: #006243;
   --color-tertiary-container: #007d57;
@@ -142,7 +142,7 @@ input {
   border: none;
   background: linear-gradient(180deg, var(--card-strong) 0%, var(--card) 100%);
   box-shadow:
-    0 20px 50px rgba(0, 74, 198, 0.05),
+    0 20px 50px rgba(5, 150, 105, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(20px);
 }
@@ -155,7 +155,7 @@ input {
   height: 7rem;
   background: radial-gradient(
     circle,
-    rgba(0, 74, 198, 0.10),
+    rgba(5, 150, 105, 0.10),
     transparent 70%
   );
   pointer-events: none;
