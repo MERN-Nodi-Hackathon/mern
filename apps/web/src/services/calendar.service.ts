@@ -1,8 +1,103 @@
+import { client } from '@/lib/supabase/client';
 import { CalendarEvent } from '@/types/models';
-import data from '@/features/calendar/calendar-data.json';
 
-// @TODO: Connect to Supabase 'appointments' table
+function ensureClient() {
+  if (!client) {
+    return null;
+  }
+  return client;
+}
+
+async function getSessionUserId(): Promise<string | null> {
+  const supabase = ensureClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    console.error('Error obteniendo sesión:', error.message);
+    return null;
+  }
+  return data.session?.user?.id ?? null;
+}
+
+async function getClinicId(userId: string): Promise<number | null> {
+  const supabase = ensureClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase.from('profiles').select('clinic_id').eq('id', userId).maybeSingle();
+  if (error) {
+    console.error('Error obteniendo clinic_id:', error.message);
+    return null;
+  }
+  return data?.clinic_id ?? null;
+}
+
+function mapStatusToEventType(status: string): string {
+  switch (status) {
+    case 'scheduled':
+      return 'booking';
+    case 'pending':
+      return 'booking';
+    case 'completed':
+      return 'confirmed';
+    case 'cancelled':
+      return 'blocked';
+    default:
+      return 'internal';
+  }
+}
+
 export async function getEvents(): Promise<CalendarEvent[]> {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return data as any as CalendarEvent[];
+  const supabase = ensureClient();
+  if (!supabase) {
+    // Fallback to mock data
+    return [
+      {
+        id: 'mock-event-1',
+        type: 'booking',
+        label: 'Cita de prueba',
+        title: 'Paciente Test 1',
+        detail: 'Dr. 1',
+        date: new Date().toISOString().slice(0, 10),
+        hour: 10,
+      },
+      {
+        id: 'mock-event-2',
+        type: 'confirmed',
+        label: 'Consulta de prueba',
+        title: 'Paciente Test 2',
+        detail: 'Dr. 2',
+        date: new Date().toISOString().slice(0, 10),
+        hour: 14,
+      },
+    ];
+  }
+
+  const userId = await getSessionUserId();
+  if (!userId) return [];
+
+  const clinicId = await getClinicId(userId);
+  if (!clinicId) return [];
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .select('id, start_time, status, patient:patients!inner(name), provider:providers!inner(name), service:services!inner(name)')
+    .eq('clinic_id', clinicId)
+    .order('start_time', { ascending: true });
+
+  if (error || !data) {
+    console.error('Error cargando eventos:', error?.message);
+    return [];
+  }
+
+  return data.map((appointment) => {
+    const start = new Date(appointment.start_time);
+    return {
+      id: String(appointment.id),
+      type: mapStatusToEventType(appointment.status) as any,
+      label: (appointment.service as any)?.name ?? (appointment.status || 'Cita'),
+      title: (appointment.patient as any)?.name ?? 'Paciente sin nombre',
+      detail: (appointment.provider as any)?.name ? `Dr. ${(appointment.provider as any).name}` : undefined,
+      date: start.toISOString().slice(0, 10),
+      hour: start.getHours(),
+    } as CalendarEvent;
+  });
 }

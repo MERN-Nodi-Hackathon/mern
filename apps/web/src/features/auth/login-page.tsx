@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, ChevronRight, ActivitySquare, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/lib/supabase/auth-context';
 
 /** Valida formato básico de correo electrónico */
 function isValidEmail(value: string): boolean {
@@ -18,11 +19,13 @@ interface FieldError {
 export function LoginPage() {
   const navigate = useNavigate();
 
+  const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FieldError>({});
   const [submitted, setSubmitted] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   /** Valida los campos y devuelve true si son correctos */
   function validate(): boolean {
@@ -44,14 +47,19 @@ export function LoginPage() {
     return Object.keys(next).length === 0;
   }
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setSubmitted(true);
+    setLoginError('');
 
     if (!validate()) return;
 
-    // TODO: Integrar con Supabase / backend real
-    navigate('/dashboard');
+    try {
+      await signIn(email, password);
+      navigate('/dashboard');
+    } catch (error) {
+      setLoginError('No se pudo iniciar sesión. Verifica tus credenciales.');
+    }
   }
 
   /** Re-valida en tiempo real sólo si el usuario ya intentó enviar */

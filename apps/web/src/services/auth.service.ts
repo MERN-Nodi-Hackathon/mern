@@ -1,54 +1,109 @@
+import { client } from '@/lib/supabase/client';
+import { getClinicById, getClinicIdForCurrentSession, getProfileRow, getSessionUserId } from '@/lib/supabase/db';
 import { User, Clinic } from '@/types/models';
 
-// @TODO: Replace with Supabase Auth or JWT-based authentication
+function mapClinic(row: any): Clinic {
+  return {
+    id: String(row.id),
+    name: row.name,
+    shortName: row.brand_name ?? row.name,
+    brandName: row.brand_name ?? row.name,
+    slogan: row.slogan ?? '',
+    specialty: row.description ?? 'General',
+    logo: row.logo ?? '',
+    description: row.description ?? '',
+    email: '',
+    phone: row.phone_prefix ?? '',
+    address: row.address ?? '',
+  };
+}
+
 export async function login(email: string, password: string): Promise<User | null> {
-  // Simulating network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  if (email === 'demo@sanctuary.com' && password === 'admin') {
-    return {
-      id: 'usr-1',
-      firstName: 'Mateo',
-      fullName: 'Dr. Mateo Ruiz',
-      role: 'Director Médico y Propietario',
-      photoUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAL47PqNn5-M_B_FvP8L0S_jS8f8m7f2R6z8r3G9W6X=s64-c',
-      email: 'm.ruiz@vitalsanctuary.com'
-    };
+  if (!client) {
+    return null;
   }
-  return null;
+
+  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (error) {
+    console.error('Error de autenticación:', error.message);
+    return null;
+  }
+
+  return getCurrentUser();
 }
 
 export async function logout(): Promise<void> {
-  await new Promise(resolve => setTimeout(resolve, 300));
+  if (!client) {
+    return;
+  }
+
+  const { error } = await client.auth.signOut();
+  if (error) {
+    console.error('Error cerrando sesión:', error.message);
+  }
 }
 
-// @TODO: Connect to Supabase 'profiles' table
 export async function getCurrentUser(): Promise<User | null> {
-  await new Promise(resolve => setTimeout(resolve, 300));
+  if (!client) {
+    return null;
+  }
+
+  const userId = await getSessionUserId();
+  if (!userId) {
+    return null;
+  }
+
+  const profile = await getProfileRow(userId);
+  if (!profile) {
+    return null;
+  }
+
   return {
-    id: 'usr-1',
-    firstName: 'Mateo',
-    fullName: 'Dr. Mateo Ruiz',
-    role: 'Director Médico y Propietario',
-    photoUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAL47PqNn5-M_B_FvP8L0S_jS8f8m7f2R6z8r3G9W6X=s64-c',
-    email: 'm.ruiz@vitalsanctuary.com'
+    id: profile.id,
+    firstName: profile.first_name ?? profile.full_name?.split(' ')[0] ?? '',
+    fullName: profile.full_name ?? '',
+    role: profile.role ?? 'staff',
+    photoUrl: profile.photo_url ?? '',
+    email: profile.email ?? '',
   };
 }
 
-// @TODO: Connect to Supabase 'clinics' or 'organizations' table
 export async function getCompanyInfo(): Promise<Clinic> {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return {
-    id: 'c1',
-    name: 'Vital Sanctuary Clinical Center',
-    shortName: 'Clinical Sanctuary',
-    brandName: 'VITAL SANCTUARY',
-    slogan: 'IA PARA EL BIENESTAR CLÍNICO',
-    specialty: 'Medicina Interna',
-    logo: 'S',
-    description: 'Premier health and wellness destination.',
-    email: 'contacto@vitalsanctuary.mx',
-    phone: '+52 55 1234 5678',
-    address: 'Calle de los Arcos 45, CDMX'
-  };
+  const clinicId = await getClinicIdForCurrentSession();
+  if (!clinicId) {
+    console.warn('No se encontró una clínica asociada, usando datos mock.');
+    return {
+      id: 'mock-clinic-1',
+      name: 'Clínica de Prueba 1',
+      shortName: 'Prueba Clínica 1',
+      brandName: 'CLÍNICA TEST 1',
+      slogan: 'Datos mock de prueba - no son del BD',
+      specialty: 'Medicina de prueba',
+      logo: 'T',
+      description: 'Información mock de ejemplo para diferenciación.',
+      email: 'test@example.com',
+      phone: '123',
+      address: 'Dirección de prueba 123',
+    };
+  }
+
+  const clinic = await getClinicById(clinicId);
+  if (!clinic) {
+    console.warn('No se pudo cargar la clínica, usando datos mock.');
+    return {
+      id: 'mock-clinic-1',
+      name: 'Clínica de Prueba 1',
+      shortName: 'Prueba Clínica 1',
+      brandName: 'CLÍNICA TEST 1',
+      slogan: 'Datos mock de prueba - no son del BD',
+      specialty: 'Medicina de prueba',
+      logo: 'T',
+      description: 'Información mock de ejemplo para diferenciación.',
+      email: 'test@example.com',
+      phone: '123',
+      address: 'Dirección de prueba 123',
+    };
+  }
+
+  return mapClinic(clinic);
 }
