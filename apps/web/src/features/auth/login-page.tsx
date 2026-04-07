@@ -93,12 +93,12 @@ export function LoginPage() {
 
       <div className="w-full max-w-md z-10">
         {/* Logo */}
-        <div className="flex flex-col items-center mb-10">
-          <div className="w-12 h-12 bg-primary-container rounded-xl flex items-center justify-center mb-4 shadow-[0_20px_50px_rgba(5,150,105,0.12)]">
-            <ActivitySquare className="text-white w-7 h-7" />
-          </div>
-          <h1 className="text-2xl font-extrabold tracking-tighter text-on-surface">VitalAgent</h1>
-          <p className="text-on-surface-variant text-sm font-medium tracking-wide mt-1">Automatización Médica</p>
+        <div className="flex flex-col items-center mb-12">
+          <img 
+            src="https://res.cloudinary.com/dkoqe8las/image/upload/v1775572969/logo_h_vitalagent_e5dfft.png" 
+            alt="vitalAgent Logo" 
+            className="h-16 w-auto object-contain"
+          />
         </div>
 
         {/* Card de Login */}
