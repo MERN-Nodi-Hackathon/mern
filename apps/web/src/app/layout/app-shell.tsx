@@ -1,6 +1,24 @@
 import { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, Calendar, Bot, Users, Settings, Plus, Search, Bell, ActivitySquare, Menu, X } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Calendar, 
+  Bot, 
+  Users, 
+  Settings, 
+  Plus, 
+  Search, 
+  Bell, 
+  ActivitySquare, 
+  Menu, 
+  X, 
+  LogOut, 
+  ChevronDown,
+  CheckCircle2,
+  Clock,
+  ShieldCheck
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import data from '@/features/settings/user-company-data.json';
 
@@ -15,6 +33,25 @@ const navigation = [
 
 export function AppShell() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const searchablePages = [
+    ...navigation,
+    { to: '/terms', label: 'Términos y Condiciones', icon: ShieldCheck }
+  ];
+
+  const filteredPages = searchablePages.filter(page => 
+    page.label.toLowerCase().includes(searchQuery.toLowerCase()) && searchQuery.length > 0
+  );
+
+  const handleLogout = () => {
+    // Aquí iría la lógica de logout real
+    navigate('/login');
+  };
 
   return (
     <div className="flex min-h-screen bg-surface text-on-surface">
@@ -69,24 +106,11 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
-        
         <div className="mt-auto px-2">
           <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-br from-primary to-primary-container px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(5,150,105,0.15)] transition-all hover:opacity-90 active:scale-[0.98]">
             <Plus className="w-5 h-5" />
             Nueva Cita
           </button>
-          
-          <div className="mt-6 flex items-center gap-3 px-1">
-            <img
-              src={data.user.photoUrl}
-              alt="Perfil Admin"
-              className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm"
-            />
-            <div>
-              <p className="text-xs font-bold text-on-surface">{data.user.fullName}</p>
-              <p className="text-[10px] text-on-surface-variant">{data.user.role}</p>
-            </div>
-          </div>
         </div>
       </aside>
 
@@ -101,29 +125,116 @@ export function AppShell() {
             >
               <Menu className="w-6 h-6" />
             </button>
-            <div className="relative w-full max-w-md hidden sm:block">
-              <Search className="absolute left-3 top-1/2 w-5 h-5 -translate-y-1/2 text-outline" />
-              <input
-                type="text"
-                placeholder="Buscar pacientes, registros o agentes..."
-                className="w-full rounded-full border-none bg-surface-container-highest py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/40 focus:outline-none transition-all placeholder:text-outline text-on-surface"
-              />
+            <div className="relative w-full max-w-xl hidden sm:block">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 w-4 h-4 -translate-y-1/2 text-on-surface-variant/40" />
+                <input
+                  type="text"
+                  placeholder="Buscar pacientes, configuración, términos o soporte..."
+                  value={searchQuery}
+                  onFocus={() => setIsSearchActive(true)}
+                  onBlur={() => setTimeout(() => setIsSearchActive(false), 200)}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-xl border-0 bg-surface-container-highest py-2.5 pl-10 pr-4 text-xs focus:ring-2 focus:ring-primary/20 transition-all text-on-surface ring-1 ring-outline-variant/10 shadow-sm"
+                />
+              </div>
+
+              {/* Resultados de búsqueda */}
+              {isSearchActive && filteredPages.length > 0 && (
+                <div className="absolute top-full left-0 mt-2 w-full bg-surface-container-lowest rounded-2xl shadow-[0_20px_50px_rgba(5,150,105,0.15)] border border-outline-variant/10 overflow-hidden z-50">
+                  {filteredPages.map((page) => (
+                    <button
+                      key={page.to}
+                      onClick={() => navigate(page.to)}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-xs font-medium text-on-surface-variant hover:bg-primary/5 hover:text-primary transition-colors text-left"
+                    >
+                      <page.icon className="w-4 h-4" />
+                      {page.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           
           <div className="flex items-center gap-6">
-            <button className="relative flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-error"></span>
-            </button>
-            <div className="h-8 w-px bg-(--outline-variant)/30"></div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-primary">Bienvenido, {data.user.firstName}</span>
-              <img
-                src={data.user.photoUrl}
-                alt="Avatar"
-                className="h-8 w-8 rounded-full object-cover"
-              />
+            <div className="relative">
+              <button 
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className={cn(
+                  "relative flex items-center gap-2 p-2 rounded-xl transition-all",
+                  isNotificationsOpen ? "bg-primary/10 text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
+                )}
+              >
+                <Bell className="w-5 h-5 flex-shrink-0" />
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-error border-2 border-surface shadow-sm"></span>
+              </button>
+
+              {/* Popover de Notificaciones */}
+              {isNotificationsOpen && (
+                <div className="absolute top-full right-0 mt-3 w-80 bg-surface-container-lowest rounded-3xl shadow-[0_30px_60px_rgba(5,150,105,0.2)] border border-outline-variant/10 overflow-hidden z-50 p-2">
+                  <div className="px-4 py-3 flex justify-between items-center border-b border-outline-variant/5">
+                    <span className="font-bold text-xs text-on-surface">Notificaciones</span>
+                    <span className="text-[10px] font-black uppercase tracking-tighter text-primary">3 Nuevas</span>
+                  </div>
+                  <div className="max-h-72 overflow-y-auto">
+                    {data.inbox.map((notif) => (
+                      <div key={notif.id} className="p-3 rounded-2xl hover:bg-surface-container-low transition-all group">
+                        <div className="flex gap-3">
+                          <div className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
+                            notif.isRead ? "bg-surface-container-high" : "bg-primary/10 text-primary"
+                          )}>
+                            {notif.isRead ? <Clock className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-medium text-on-surface leading-snug">{notif.message}</p>
+                            <p className="text-[10px] text-on-surface-variant/60 mt-1">{notif.time}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="h-6 w-px bg-outline-variant/30"></div>
+
+            <div className="relative">
+              <button 
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center gap-2.5 p-1 px-2 rounded-xl hover:bg-surface-container-high transition-all"
+              >
+                <img
+                  src={data.user.photoUrl}
+                  alt="Avatar"
+                  className="h-8 w-8 rounded-lg object-cover ring-2 ring-primary/10"
+                />
+                <div className="hidden sm:block text-left">
+                  <p className="text-xs font-bold text-on-surface flex items-center gap-1">
+                    Buenos días, {data.user.firstName}
+                    <ChevronDown className="w-3.5 h-3.5 opacity-40" />
+                  </p>
+                </div>
+              </button>
+
+              {/* Menu de Perfil */}
+              {isProfileOpen && (
+                <div className="absolute top-full right-0 mt-3 w-48 bg-surface-container-lowest rounded-2xl shadow-[0_30px_60px_rgba(5,150,105,0.2)] border border-outline-variant/10 overflow-hidden z-50 p-1.5">
+                  <div className="px-3 py-2 border-b border-outline-variant/5 mb-1">
+                    <p className="text-[11px] font-bold text-on-surface">{data.user.fullName}</p>
+                    <p className="text-[10px] text-on-surface-variant truncate">{data.user.role}</p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-bold text-error hover:bg-error/5 rounded-xl transition-colors text-left"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Cerrar Sesión
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>

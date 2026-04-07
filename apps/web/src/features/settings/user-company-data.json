@@ -28,5 +28,10 @@
       { "id": "new_appointments", "label": "Citas Nuevas", "description": "Confirmación de agenda IA", "defaultChecked": true },
       { "id": "security", "label": "Seguridad", "description": "Inicios de sesión sospechosos", "defaultChecked": false }
     ]
-  }
+  },
+  "inbox": [
+    { "id": "notif_1", "message": "No olvides gestionar tu agenda de hoy, tienes 3 espacios libres.", "time": "Hace 5 min", "isRead": false },
+    { "id": "notif_2", "message": "VitalAgent ha reprogramado automáticamente la cita de las 14:00.", "time": "Hace 20 min", "isRead": true },
+    { "id": "notif_3", "message": "Recordatorio: Revisión de inventario de suministros médicos pendiente.", "time": "Hace 1 hora", "isRead": true }
+  ]
 }
