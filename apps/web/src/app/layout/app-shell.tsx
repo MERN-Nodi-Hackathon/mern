@@ -115,7 +115,7 @@ export function AppShell() {
               <Bell className="w-5 h-5" />
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-error"></span>
             </button>
-            <div className="h-8 w-[1px] bg-outline-variant/30"></div>
+            <div className="h-8 w-px bg-(--outline-variant)/30"></div>
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-primary">Bienvenido, Pedro</span>
               <img
