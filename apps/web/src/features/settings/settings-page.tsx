@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PageHeader } from '@/components/ui/page-header';
 import { SectionIconCard } from '@/components/ui/section-icon-card';
+import data from './user-company-data.json';
 
 interface ToggleRowProps {
   label: string;
@@ -36,11 +37,7 @@ function ToggleRow({ label, description, defaultChecked = false }: ToggleRowProp
   );
 }
 
-const TOGGLES = [
-  { label: 'Alertas Médicas', description: 'Notificar cambios en signos vitales', defaultChecked: true },
-  { label: 'Citas Nuevas', description: 'Confirmación de agenda IA', defaultChecked: true },
-  { label: 'Seguridad', description: 'Inicios de sesión sospechosos', defaultChecked: false },
-];
+const TOGGLES = data.preferences.notifications;
 
 export function SettingsPage() {
   return (
@@ -67,16 +64,19 @@ export function SettingsPage() {
           <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1 space-y-2">
               <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Nombre de la Clínica</Label>
-              <Input className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue="Sanctuary Clinical Center" />
+              <Input className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue={data.clinic.name} />
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
               <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Especialidad Principal</Label>
               <div className="relative">
-                <select className="w-full px-4 py-3.5 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface appearance-none text-base outline-none">
-                  <option>Medicina Interna</option>
-                  <option>Cardiología</option>
-                  <option>Pediatría</option>
-                  <option>Neurología</option>
+                <select 
+                  className="w-full px-4 py-3.5 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface appearance-none text-base outline-none cursor-pointer"
+                  defaultValue={data.clinic.specialty}
+                >
+                  <option value="Medicina Interna">Medicina Interna</option>
+                  <option value="Cardiología">Cardiología</option>
+                  <option value="Pediatría">Pediatría</option>
+                  <option value="Neurología">Neurología</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-on-surface-variant">
                   <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -87,15 +87,15 @@ export function SettingsPage() {
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
               <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Correo Electrónico</Label>
-              <Input type="email" className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue="contacto@sanctuaryclinical.com" />
+              <Input type="email" className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue={data.clinic.email} />
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
               <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Teléfono de Contacto</Label>
-              <Input type="tel" className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue="+34 912 345 678" />
+              <Input type="tel" className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue={data.clinic.phone} />
             </div>
             <div className="col-span-2 space-y-2">
               <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Dirección Física</Label>
-              <Input className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue="Paseo de la Castellana 120, 28046 Madrid, España" />
+              <Input className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue={data.clinic.address} />
             </div>
           </div>
         </SectionIconCard>
@@ -144,25 +144,25 @@ export function SettingsPage() {
           className="col-span-12 lg:col-span-6 flex flex-col"
           titleAddon={
             <span className="px-3 py-1 bg-tertiary-container/10 text-tertiary font-bold text-[10px] uppercase tracking-wider rounded-full">
-              Plan Premium AI
+              {data.billing.plan}
             </span>
           }
         >
           <div className="flex flex-col gap-6">
             <div className="flex items-center p-5 bg-surface-container-low/50 rounded-2xl border border-outline-variant/5">
               <div className="w-14 h-9 bg-surface-container-high rounded-md mr-5 flex items-center justify-center font-black text-on-surface-variant text-[11px] tracking-widest shadow-sm">
-                VISA
+                {data.billing.cardType}
               </div>
               <div className="flex-1">
-                <p className="text-[15px] font-bold text-on-surface">Termina en **** 4492</p>
-                <p className="text-[13px] text-on-surface-variant font-medium mt-0.5">Expira 12/26</p>
+                <p className="text-[15px] font-bold text-on-surface">Termina en {data.billing.cardNumberHidden}</p>
+                <p className="text-[13px] text-on-surface-variant font-medium mt-0.5">Expira {data.billing.cardExpiry}</p>
               </div>
               <Button variant="link" className="text-primary font-bold text-sm tracking-wide">Cambiar</Button>
             </div>
             <div className="flex items-center justify-between text-[15px] px-2">
-              <span className="text-on-surface-variant font-medium">Próximo cargo: 15 de Oct, 2023</span>
+              <span className="text-on-surface-variant font-medium">Próximo cargo: {data.billing.nextChargeDate}</span>
               <span className="font-black text-on-surface text-lg">
-                149,00 € <span className="text-sm font-medium text-on-surface-variant">/ mes</span>
+                {data.billing.priceMonthly} <span className="text-sm font-medium text-on-surface-variant">/ mes</span>
               </span>
             </div>
           </div>
@@ -174,7 +174,7 @@ export function SettingsPage() {
           <div className="relative w-full h-80 rounded-4xl overflow-hidden shadow-[0_20px_50px_rgba(5,150,105,0.05)] border-4 border-surface-container-lowest">
             <div className="absolute inset-0 overflow-hidden">
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoKbWcJ7p1FjKRMP1oWgCHlZho2HYGd6u_gcZiQSreIWXO_Lzm-UL1jNYEB_IDeXqDtK0RW7_J9gROxy5lXxiykmukezQ4Hs-fmpExQ3wyLsVt3zpOqB7PgSAal_fCgLV5P9dUJrFaba0IddKN9URgVy2rjq6GwpRjdN1CawKnhFur6BvVI2VNVAUFvlfVe0BmD6gW33oz2uD_sp_D-82n2cZBLkZ0zKJCl5gDJlenWVNewXsauA_ZKAvK3l48gZEOKtL0D29pWFYx"
+                src={data.clinic.mapImageUrl}
                 alt="Mapa de ubicación de la clínica"
                 className="w-full h-full object-cover grayscale opacity-60 contrast-125 hover:scale-105 transition-transform duration-1000"
               />
@@ -185,7 +185,7 @@ export function SettingsPage() {
                   <MapPin className="w-7 h-7" />
                 </div>
                 <div className="bg-surface-container-lowest/90 backdrop-blur-md px-5 py-2.5 rounded-xl shadow-xl">
-                  <p className="text-[13px] font-bold text-on-surface">Sede Principal Sanctuary</p>
+                  <p className="text-[13px] font-bold text-on-surface">{data.clinic.locationName}</p>
                 </div>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { LayoutDashboard, Calendar, Bot, Users, Settings, Plus, Search, Bell, ActivitySquare, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import data from '@/features/settings/user-company-data.json';
 
 const navigation = [
   { to: '/dashboard', label: 'Inicio', icon: LayoutDashboard },
@@ -32,9 +33,9 @@ export function AppShell() {
       )}>
         <div className="mb-10 px-2 flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold tracking-tighter text-on-surface">VitalAgent</h1>
+            <h1 className="text-xl font-bold tracking-tighter text-on-surface">{data.clinic.brandName}</h1>
             <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-              Automatización Médica
+              {data.clinic.slogan}
             </p>
           </div>
           <button 
@@ -77,13 +78,13 @@ export function AppShell() {
           
           <div className="mt-6 flex items-center gap-3 px-1">
             <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2emjpInvW9ow0KFdxZ3Hb1XQmZYBFJv09HZBX1w0wzEBsPa7CRTqoAdzGRthmE0npIuHImKTlv8-i8gmTzXkTasly0lUSSO_umNdf5NkaYv9i-w6DjmUGKRLOuv2olXYp7ORhqsQMth3F8eiYzdIrUKW7hGJgTmBVJxpOGsWqGKAThbDBn6YTqkHrUT2o36777GRKVp14aDoqs3oTUj5NRogKJMM36KtLgsXUl70mKLzsxeblRnD5O1DyUPqEOF0nwCFH1rrPW98Q"
+              src={data.user.photoUrl}
               alt="Perfil Admin"
               className="h-10 w-10 rounded-full border-2 border-white object-cover shadow-sm"
             />
             <div>
-              <p className="text-xs font-bold text-on-surface">Pedro Profile</p>
-              <p className="text-[10px] text-on-surface-variant">Administrador</p>
+              <p className="text-xs font-bold text-on-surface">{data.user.fullName}</p>
+              <p className="text-[10px] text-on-surface-variant">{data.user.role}</p>
             </div>
           </div>
         </div>
@@ -117,9 +118,9 @@ export function AppShell() {
             </button>
             <div className="h-8 w-px bg-(--outline-variant)/30"></div>
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-primary">Bienvenido, Pedro</span>
+              <span className="text-sm font-medium text-primary">Bienvenido, {data.user.firstName}</span>
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuACOcINnmBQjoKhv9RB1XAXpvYk_GyQk6jMrUZlrIn-9jvD7THP19qbzPKaVR4KT98iq112wXtJX4OEnpFk9IaFpjevYE797L4f-S7COcuJumWZSOaIcbmt31ZlmDm8qIXHpc2KksewKliQvGSJxBN-QQfKjvNbkh3rplgVUuUbszIXeo1LmPNKCO5TlHZQBgYxVKBi0kFtgoJIEr_AN_5Hhn-Ddiznvsf12gH_Az2vIcYr9U78EZuvRy0mojpBhcDYGSECms2hzVdY"
+                src={data.user.photoUrl}
                 alt="Avatar"
                 className="h-8 w-8 rounded-full object-cover"
               />

@@ -1,0 +1,34 @@
+{
+  "clinic": {
+    "name": "Sanctuary Clinical Center",
+    "brandName": "VitalAgent",
+    "slogan": "Automatización Médica",
+    "specialty": "Medicina Interna",
+    "email": "contacto@sanctuaryclinical.com",
+    "phone": "+34 912 345 678",
+    "address": "Paseo de la Castellana 120, 28046 Madrid, España",
+    "locationName": "Sede Principal Sanctuary",
+    "mapImageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCoKbWcJ7p1FjKRMP1oWgCHlZho2HYGd6u_gcZiQSreIWXO_Lzm-UL1jNYEB_IDeXqDtK0RW7_J9gROxy5lXxiykmukezQ4Hs-fmpExQ3wyLsVt3zpOqB7PgSAal_fCgLV5P9dUJrFaba0IddKN9URgVy2rjq6GwpRjdN1CawKnhFur6BvVI2VNVAUFvlfVe0BmD6gW33oz2uD_sp_D-82n2cZBLkZ0zKJCl5gDJlenWVNewXsauA_ZKAvK3l48gZEOKtL0D29pWFYx"
+  },
+  "user": {
+    "firstName": "Pedro",
+    "fullName": "Pedro Profile",
+    "role": "Administrador",
+    "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuB2emjpInvW9ow0KFdxZ3Hb1XQmZYBFJv09HZBX1w0wzEBsPa7CRTqoAdzGRthmE0npIuHImKTlv8-i8gmTzXkTasly0lUSSO_umNdf5NkaYv9i-w6DjmUGKRLOuv2olXYp7ORhqsQMth3F8eiYzdIrUKW7hGJgTmBVJxpOGsWqGKAThbDBn6YTqkHrUT2o36777GRKVp14aDoqs3oTUj5NRogKJMM36KtLgsXUl70mKLzsxeblRnD5O1DyUPqEOF0nwCFH1rrPW98Q"
+  },
+  "billing": {
+    "plan": "Plan Premium AI",
+    "cardType": "VISA",
+    "cardNumberHidden": "**** 4492",
+    "cardExpiry": "12/26",
+    "nextChargeDate": "15 de Oct, 2023",
+    "priceMonthly": "149,00 €"
+  },
+  "preferences": {
+    "notifications": [
+      { "id": "medical_alerts", "label": "Alertas Médicas", "description": "Notificar cambios en signos vitales", "defaultChecked": true },
+      { "id": "new_appointments", "label": "Citas Nuevas", "description": "Confirmación de agenda IA", "defaultChecked": true },
+      { "id": "security", "label": "Seguridad", "description": "Inicios de sesión sospechosos", "defaultChecked": false }
+    ]
+  }
+}
