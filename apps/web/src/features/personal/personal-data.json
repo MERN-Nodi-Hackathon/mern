@@ -1,0 +1,102 @@
+{
+  "stats": {
+    "teamEfficiency": 94,
+    "efficiencyIncrease": 12,
+    "modelVersion": "Motor Sanctuary v2.4"
+  },
+  "doctors": [
+    {
+      "id": "doc-1",
+      "name": "Dra. Elena Valdés",
+      "specialty": "Cardiología Clínica",
+      "status": "available",
+      "statusLabel": "Disponible",
+      "consultorio": "402-B",
+      "nextTurno": "Mañana, 08:00 AM",
+      "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCOAHczTELyQlqkKFKyhm2O_qEcfFLjpKfFX4zFmkxPUKOZ5qhXEh56v-rXeC1KkLhfbHBuy4Np05RJwjVTodpKWRnXmyaM7ayvU0ORQpg9knDJvsLQYA8jptfFlTyiXBw6RmvrbCFxIs4O6p1RDUor7vIb1r_68P6yFzUP9mcP8fNS-sHR9OVetT8mp4nO6DXNUfJ7dZ5l4Wf88XHHmegZd7AgKYPQtEy-QQSdtNSV8P9hUgZKk5V6G6FQbu4ykteHjamB6VWxe9KY",
+      "initials": "EV"
+    },
+    {
+      "id": "doc-2",
+      "name": "Dr. Julián Sotto",
+      "specialty": "Neurología Avanzada",
+      "status": "busy",
+      "statusLabel": "En Consulta",
+      "consultorio": "115",
+      "timeLeft": "15 min",
+      "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDW12Z4K4LDik03qqB7e-bk95HZ7sWQUalcYUQkp4Ye4v89OnU1kYAp5TvXWKe60qT8jghYrnBLMjpQXAGlqJ_b0G-RcXT0y5YpGYPM5q3OWk1FPU40fH-AiHc8PRWYiCHYwjcSZs7vA37tfxUrcCD12786JXnc0jgPoN9iL8nP9vIw_eQfc3ZJhqEQWR1lr0x-6Ggh33sLMwTQFCwXee0qwmpALXUBmGy1KZLfMeYQ9NHOM8Uq5Ww6_EczPCHvd4ne--_NJNfAIy-C",
+      "initials": "JS"
+    },
+    {
+      "id": "doc-3",
+      "name": "Dra. Sara Méndez",
+      "specialty": "Pediatría General",
+      "status": "away",
+      "statusLabel": "Fuera de Turno",
+      "consultorio": "Planta 2",
+      "returnDate": "Lunes, 09:00 AM",
+      "urgentAvailable": true,
+      "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCjihYP4wretI_tB-39LFx81fi4s6gDkN1tGRG_fH_nad-icwP8VuKIbbnPTjih504HGmgWBLRh1o2vB0nure-LrRgzZDCI15Ibbm8KLS6g0CaO9MdzH0nAMeGlBlodVrve0NzZg1WgKXjWn8r0KRuoPlT-j824XmDXMIs_QXW8Y_8JrdwzDg4fRoEWgrm315-owub9kXNz2s52AR9iqUZRGPNkSpaNbme_cHF-HTRWpMYBsgowib8-J0ap-2StqK4XmWzUJVoVfQ5b",
+      "initials": "SM"
+    },
+    {
+      "id": "doc-4",
+      "name": "Dr. Mateo Ruiz",
+      "specialty": "Traumatología",
+      "status": "available",
+      "statusLabel": "Disponible",
+      "consultorio": "205",
+      "nextTurno": "Hoy, 14:00 PM",
+      "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAispoU1b_aWECXLTGuVovm7MZ8VrqQCER7QWEYkiOlYMuqD9Cb8vrJv-6ANgQFLsm5ZAV_zmkCdqXVXO2wJXJM0Gdouul4IDpiyPEXx3Rn-dmssJhx9GXVO0b1VqBwEnWbgMTeMrAj2eqJuQ-ZwAAqaBZdSi-NzCqWfApdiTjrJaYMbRiD5bwIyl1tGgS9YqIOpGL2XwrJwnE0_7LJ5SqRT7-6JNP62jJQOQ_L8GMP-egyDWnPa_3EebFUvx97Y8oOQlcZWW8OQDUN",
+      "initials": "MR"
+    }
+  ],
+  "shifts": [
+    {
+      "id": "shift-1",
+      "dayLabel": "LU",
+      "dayType": "morning",
+      "title": "Turno de Mañana - Guardia Externa",
+      "subtitle": "3 Médicos Asignados • 08:00 - 14:00",
+      "avatars": [
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuAXVTECwwGWL_V2fDNmx9ONqnmqwkwnn_TbFw7pSgiw3UrA1OdnV2Wz6Wk5i52OVgFa6zycb3zx4_ne9jKsGfbTU71MlhHfHP4ZKyIruoQ_ELutYa2ZxnWx_WM7Ngbp2nB8gk0gTY_s2iNYU3YWhWtYmMYp3WqKrjZ2BlMNZb1By_QAtopnTDUttPD_-WJj3xRjM-BweFb2w2Rzu_If-PiMZPqO2cH6_o03waFbdTDZjXEbk7tzIw-DP639LNgKs1-6ycyk_vnb_raK"
+      ],
+      "overflow": "+2"
+    },
+    {
+      "id": "shift-2",
+      "dayLabel": "MA",
+      "dayType": "surgery",
+      "title": "Cirugías Programadas - Quirófano A",
+      "subtitle": "2 Médicos Asignados • 07:00 - 15:00",
+      "avatars": [
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuCXJrFRCPTHGYoiqgIqlL647t1xNqQAy9YjJnwWjNGlb41RJfZ2SsD1LjRI2YxcYtFQQggkmEGSq1WkopMnkAHUwVI6ic6-XwaNYX906YrTrWpbK9ZROH8j6e9lJ7rNi7Kq7GpddqIaFAJsGGcFQc2q1_yuGN72COkZSDWiRtlNY0Yv7fjCcebQjmb5hjBXDsCLLw4EkqTslGwDQQBDzohjPtCG4kvJCqkQdKVwVlQ16Xk4QWqBGgdo-vwp7og_FEzU1Yf-iKaEj21m"
+      ],
+      "overflow": null
+    },
+    {
+      "id": "shift-3",
+      "dayLabel": "MI",
+      "dayType": "specialty",
+      "title": "Consultas de Especialidad - Planta 2",
+      "subtitle": "5 Médicos Asignados • 09:00 - 18:00",
+      "avatars": [],
+      "overflow": "..."
+    }
+  ],
+  "aiSuggestions": [
+    {
+      "id": "sug-1",
+      "type": "Cambio de Turno",
+      "body": "Mover al **Dr. Julián Sotto** a urgencias nocturnas para cubrir la baja proyectada por congreso.",
+      "actionLabel": "Aplicar"
+    },
+    {
+      "id": "sug-2",
+      "type": "Refuerzo Requerido",
+      "body": "Se requiere 1 pediatra adicional el viernes tarde debido a picos estacionales detectados.",
+      "actionLabel": "Asignar"
+    }
+  ],
+  "agentInsight": "He detectado una saturación proyectada en Cardiología para este Jueves. Sugiero reasignar el turno de la Dra. Valdés para optimizar la espera."
+}

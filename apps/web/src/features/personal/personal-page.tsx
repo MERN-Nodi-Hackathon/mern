@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import {
   RotateCw,
   Stethoscope,
@@ -5,244 +6,308 @@ import {
   Calendar,
   Zap,
   Bot,
-  TrendingUp,
   UserPlus,
   X,
   Filter,
-  Plus
+  Plus,
+  Search,
+  CheckCircle2,
+  AlertCircle,
+  MoreHorizontal
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/ui/page-header';
+import personnelData from './personal-data.json';
 
-const DOCTORS = [
-  {
-    name: 'Dra. Elena Valdés',
-    specialty: 'Cardiología Clínica',
-    statusLabel: 'Disponible',
-    statusClass: 'bg-emerald-50 text-emerald-600',
-    ringClass: 'ring-emerald-50',
-    inactive: false,
-    meta: [
-      { icon: RotateCw, text: 'Próximo Turno: Mañana, 08:00 AM' },
-      { icon: Stethoscope, text: 'Consultorio: 402-B' },
-    ],
-    photoUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOAHczTELyQlqkKFKyhm2O_qEcfFLjpKfFX4zFmkxPUKOZ5qhXEh56v-rXeC1KkLhfbHBuy4Np05RJwjVTodpKWRnXmyaM7ayvU0ORQpg9knDJvsLQYA8jptfFlTyiXBw6RmvrbCFxIs4O6p1RDUor7vIb1r_68P6yFzUP9mcP8fNS-sHR9OVetT8mp4nO6DXNUfJ7dZ5l4Wf88XHHmegZd7AgKYPQtEy-QQSdtNSV8P9hUgZKk5V6G6FQbu4ykteHjamB6VWxe9KY',
-    initials: 'EV',
-  },
-  {
-    name: 'Dr. Julián Sotto',
-    specialty: 'Neurología Avanzada',
-    statusLabel: 'En Consulta',
-    statusClass: 'bg-primary/10 text-primary',
-    ringClass: 'ring-primary/5',
-    inactive: false,
-    meta: [
-      { icon: Clock, text: 'Finaliza en: 15 min' },
-      { icon: Stethoscope, text: 'Consultorio: 115' },
-    ],
-    photoUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDW12Z4K4LDik03qqB7e-bk95HZ7sWQUalcYUQkp4Ye4v89OnU1kYAp5TvXWKe60qT8jghYrnBLMjpQXAGlqJ_b0G-RcXT0y5YpGYPM5q3OWk1FPU40fH-AiHc8PRWYiCHYwjcSZs7vA37tfxUrcCD12786JXnc0jgPoN9iL8nP9vIw_eQfc3ZJhqEQWR1lr0x-6Ggh33sLMwTQFCwXee0qwmpALXUBmGy1KZLfMeYQ9NHOM8Uq5Ww6_EczPCHvd4ne--_NJNfAIy-C',
-    initials: 'JS',
-  },
-  {
-    name: 'Dra. Sara Méndez',
-    specialty: 'Pediatría General',
-    statusLabel: 'Fuera de Turno',
-    statusClass: 'bg-surface-variant text-on-surface-variant',
-    ringClass: '',
-    inactive: true,
-    meta: [
-      { icon: Calendar, text: 'Regresa: Lunes, 09:00 AM' },
-      { icon: Zap, text: 'Disponible para Urgencias', highlight: true },
-    ],
-    photoUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCjihYP4wretI_tB-39LFx81fi4s6gDkN1tGRG_fH_nad-icwP8VuKIbbnPTjih504HGmgWBLRh1o2vB0nure-LrRgzZDCI15Ibbm8KLS6g0CaO9MdzH0nAMeGlBlodVrve0NzZg1WgKXjWn8r0KRuoPlT-j824XmDXMIs_QXW8Y_8JrdwzDg4fRoEWgrm315-owub9kXNz2s52AR9iqUZRGPNkSpaNbme_cHF-HTRWpMYBsgowib8-J0ap-2StqK4XmWzUJVoVfQ5b',
-    initials: 'SM',
-  },
-];
+// ─── Tipos ────────────────────────────────────────────────────────────────────
 
-const SHIFTS = [
-  {
-    dayLabel: 'LU',
-    dayColor: 'bg-emerald-50 text-emerald-600',
-    title: 'Turno de Mañana - Guardia Externa',
-    subtitle: '3 Médicos Asignados • 08:00 - 14:00',
-    hoverColor: 'group-hover:text-primary',
-    avatars: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAispoU1b_aWECXLTGuVovm7MZ8VrqQCER7QWEYkiOlYMuqD9Cb8vrJv-6ANgQFLsm5ZAV_zmkCdqXVXO2wJXJM0Gdouul4IDpiyPEXx3Rn-dmssJhx9GXVO0b1VqBwEnWbgMTeMrAj2eqJuQ-ZwAAqaBZdSi-NzCqWfApdiTjrJaYMbRiD5bwIyl1tGgS9YqIOpGL2XwrJwnE0_7LJ5SqRT7-6JNP62jJQOQ_L8GMP-egyDWnPa_3EebFUvx97Y8oOQlcZWW8OQDUN',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAXVTECwwGWL_V2fDNmx9ONqnmqwkwnn_TbFw7pSgiw3UrA1OdnV2Wz6Wk5i52OVgFa6zycb3zx4_ne9jKsGfbTU71MlhHfHP4ZKyIruoQ_ELutYa2ZxnWx_WM7Ngbp2nB8gk0gTY_s2iNYU3YWhWtYmMYp3WqKrjZ2BlMNZb1By_QAtopnTDUttPD_-WJj3xRjM-BweFb2w2Rzu_If-PiMZPqO2cH6_o03waFbdTDZjXEbk7tzIw-DP639LNgKs1-6ycyk_vnb_raK',
-    ],
-    overflow: '+1',
-  },
-  {
-    dayLabel: 'MA',
-    dayColor: 'bg-amber-50 text-amber-600',
-    title: 'Cirugías Programadas - Quirófano A',
-    subtitle: '2 Médicos Asignados • 07:00 - 15:00',
-    hoverColor: 'group-hover:text-amber-600',
-    avatars: [
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCXJrFRCPTHGYoiqgIqlL647t1xNqQAy9YjJnwWjNGlb41RJfZ2SsD1LjRI2YxcYtFQQggkmEGSq1WkopMnkAHUwVI6ic6-XwaNYX906YrTrWpbK9ZROH8j6e9lJ7rNi7Kq7GpddqIaFAJsGGcFQc2q1_yuGN72COkZSDWiRtlNY0Yv7fjCcebQjmb5hjBXDsCLLw4EkqTslGwDQQBDzohjPtCG4kvJCqkQdKVwVlQ16Xk4QWqBGgdo-vwp7og_FEzU1Yf-iKaEj21m',
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuAYZy1snYC3VZ9j652U4hLWHoKgGxG0lecpmp69TtKlYhojgE5Dfsjv4NqYLRxIbfkXD66zy8w07w2McImyVK4TkR18pIxDm7fsoi_yU9Qy-AlTRWK1ZsRyCgVE-1bRBAk42I9D8OHStRdbX_ppB11zChBdAsM4f5RHq69iBrrKm4mxD1x6Z11SwEgJUkOj02YmJ5r7RQesuC-rf2bp4xy8GptOydimxDRBHlFQEhuvnEKfdnkPLt0EDaY70Gi555mIo2lyAUkKbti0',
-    ],
-    overflow: null,
-  },
-  {
-    dayLabel: 'MI',
-    dayColor: 'bg-blue-50 text-blue-600',
-    title: 'Consultas de Especialidad - Planta 2',
-    subtitle: '5 Médicos Asignados • 09:00 - 18:00',
-    hoverColor: 'group-hover:text-blue-600',
-    avatars: [],
-    overflow: '...',
-  },
-];
+type PersonnelStatus = 'all' | 'available' | 'busy' | 'away';
 
-const AI_SUGGESTIONS = [
-  {
-    icon: TrendingUp,
-    type: 'Cambio de Turno',
-    body: ['Mover ', <strong key="s" className="font-black">Dr. Julián Sotto</strong>, ' a urgencias nocturnas para cubrir baja por congreso.'],
-    actionLabel: 'Aplicar',
+interface Doctor {
+  id: string;
+  name: string;
+  specialty: string;
+  status: 'available' | 'busy' | 'away';
+  statusLabel: string;
+  consultorio: string;
+  nextTurno?: string;
+  timeLeft?: string;
+  returnDate?: string;
+  urgentAvailable?: boolean;
+  photoUrl: string;
+  initials: string;
+}
+
+// ─── Constantes y Mapeos ──────────────────────────────────────────────────────
+
+const STATUS_CONFIG = {
+  available: {
+    label: 'Disponible',
+    class: 'bg-emerald-50 text-emerald-600',
+    ring: 'ring-emerald-500/20',
+    icon: CheckCircle2
   },
-  {
-    icon: UserPlus,
-    type: 'Refuerzo Requerido',
-    body: ['Se requiere 1 pediatra adicional el viernes tarde debido a picos estacionales.'],
-    actionLabel: 'Asignar',
+  busy: {
+    label: 'En Consulta',
+    class: 'bg-primary/10 text-primary',
+    ring: 'ring-primary/20',
+    icon: Clock
   },
-];
+  away: {
+    label: 'Fuera de Turno',
+    class: 'bg-surface-container-high text-on-surface-variant',
+    ring: '',
+    icon: AlertCircle
+  },
+} as const;
+
+const SHIFT_TYPE_CONFIG = {
+  morning:   { color: 'bg-emerald-50 text-emerald-600', hover: 'group-hover:text-primary' },
+  surgery:   { color: 'bg-amber-50 text-amber-600',     hover: 'group-hover:text-amber-600' },
+  specialty: { color: 'bg-blue-50 text-blue-600',      hover: 'group-hover:text-blue-600' },
+} as const;
+
+// ─── Sub-componente: Tarjeta de Médico ────────────────────────────────────────
+
+function DoctorCard({ doctor }: { doctor: Doctor }) {
+  const config    = STATUS_CONFIG[doctor.status];
+  const isInactive = doctor.status === 'away';
+
+  return (
+    <Card
+      className={`p-6 rounded-3xl border-0 transition-all duration-300 group ${
+        isInactive
+          ? 'bg-transparent border-dashed border-2 border-outline-variant/20 shadow-none'
+          : 'bg-surface-container-lowest shadow-[0_20px_50px_rgba(5,150,105,0.03)] hover:shadow-[0_20px_50px_rgba(5,150,105,0.08)]'
+      }`}
+    >
+      <div className={`flex justify-between items-start mb-5 ${isInactive ? 'opacity-60' : ''}`}>
+        <div className="relative">
+          <Avatar className={`w-14 h-14 rounded-2xl border-2 border-surface-container-lowest shadow-sm ${config.ring ? `ring-4 ${config.ring}` : ''} ${isInactive ? 'grayscale opacity-70' : ''}`}>
+            <AvatarImage src={doctor.photoUrl} className="object-cover" />
+            <AvatarFallback className="rounded-2xl bg-surface-container font-bold text-on-surface-variant">{doctor.initials}</AvatarFallback>
+          </Avatar>
+          {!isInactive && (
+            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-surface-container-lowest ${doctor.status === 'available' ? 'bg-emerald-500' : 'bg-primary'}`} />
+          )}
+        </div>
+        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest ${config.class}`}>
+          {doctor.statusLabel}
+        </span>
+      </div>
+
+      <h4 className={`text-base font-bold text-on-surface leading-tight mb-1 ${isInactive ? 'opacity-60' : ''}`}>
+        {doctor.name}
+      </h4>
+      <p className={`text-xs text-on-surface-variant font-medium mb-5 ${isInactive ? 'opacity-60' : ''}`}>
+        {doctor.specialty}
+      </p>
+
+      <div className={`space-y-2.5 pt-4 border-t border-outline-variant/10 ${isInactive ? 'opacity-60' : ''}`}>
+        <div className="flex items-center text-[11px] font-medium text-on-surface-variant">
+          <Stethoscope className="w-3.5 h-3.5 mr-2 shrink-0 opacity-60" />
+          Consultorio: {doctor.consultorio}
+        </div>
+
+        {doctor.status === 'available' && doctor.nextTurno && (
+          <div className="flex items-center text-[11px] font-medium text-on-surface-variant">
+            <RotateCw className="w-3.5 h-3.5 mr-2 shrink-0 opacity-60" />
+            Prox: {doctor.nextTurno}
+          </div>
+        )}
+
+        {doctor.status === 'busy' && doctor.timeLeft && (
+          <div className="flex items-center text-[11px] font-medium text-primary">
+            <Clock className="w-3.5 h-3.5 mr-2 shrink-0 opacity-80" />
+            Libre en: {doctor.timeLeft}
+          </div>
+        )}
+
+        {doctor.status === 'away' && (
+          <>
+            {doctor.returnDate && (
+              <div className="flex items-center text-[11px] font-medium text-on-surface-variant/70">
+                <Calendar className="w-3.5 h-3.5 mr-2 shrink-0 opacity-60" />
+                Vuelve: {doctor.returnDate}
+              </div>
+            )}
+            {doctor.urgentAvailable && (
+              <div className="flex items-center text-[11px] font-bold text-emerald-600/80">
+                <Zap className="w-3.5 h-3.5 mr-2 shrink-0" />
+                Disponible Urgencias
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+// ─── Componente Principal ─────────────────────────────────────────────────────
 
 export function PersonalPage() {
+  const [activeFilter, setActiveFilter] = useState<PersonnelStatus>('all');
+  const [searchQuery, setSearchQuery]   = useState('');
+
+  const personnel = personnelData.doctors as Doctor[];
+
+  const filteredTeam = useMemo(() => {
+    return personnel.filter((doc) => {
+      const matchFilter = activeFilter === 'all' || doc.status === activeFilter;
+      const q = searchQuery.toLowerCase();
+      const matchSearch = !q || doc.name.toLowerCase().includes(q) || doc.specialty.toLowerCase().includes(q);
+      return matchFilter && matchSearch;
+    });
+  }, [personnel, activeFilter, searchQuery]);
+
   return (
     <div className="flex flex-col w-full max-w-[1400px] mx-auto min-h-screen">
       <div className="flex-1 grid grid-cols-12 gap-8">
 
-        {/* Team Grid Section */}
+        {/* ── Columna Izquierda: Grid de Médicos y Turnos ─────────────────────── */}
         <section className="col-span-12 lg:col-span-8 space-y-8">
           <PageHeader
             title="Equipo Clínico"
             description="Supervisión en tiempo real de la disponibilidad del equipo."
             action={
-              <div className="flex space-x-2 bg-surface-container-low p-1.5 rounded-2xl">
-                <Button variant="ghost" className="bg-surface-container-lowest text-on-surface font-medium hover:bg-surface-container-lowest hover:text-primary transition-colors rounded-xl px-4">
-                  <Filter className="w-4 h-4 mr-2 text-on-surface-variant" />
-                  Filtrar
-                </Button>
-                <Button className="bg-primary text-white font-medium shadow-lg shadow-primary/20 hover:bg-primary/95 transition-all rounded-xl px-5">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant/40" />
+                  <Input
+                    placeholder="Buscar médico o especialidad..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 pr-4 h-10 w-64 bg-surface-container-low border-0 rounded-xl text-sm focus-visible:ring-primary/20"
+                  />
+                </div>
+                <Button className="bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary/95 transition-all rounded-xl h-10 px-5">
                   <Plus className="w-4 h-4 mr-2" />
-                  Añadir Médico
+                  Añadir
                 </Button>
               </div>
             }
           />
 
-          {/* Doctor Cards */}
+          {/* Filtros de estado */}
+          <div className="flex items-center gap-2">
+            {(['all', 'available', 'busy', 'away'] as PersonnelStatus[]).map((f) => {
+              const isActive = activeFilter === f;
+              const labels = { all: 'Todos', available: 'Disponibles', busy: 'En Consulta', away: 'Fuera' };
+              return (
+                <button
+                  key={f}
+                  onClick={() => setActiveFilter(f)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                    isActive
+                      ? 'bg-primary text-white shadow-sm shadow-primary/20'
+                      : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                  }`}
+                >
+                  {labels[f]}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Grid de Doctores */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {DOCTORS.map((doc) => (
-              <Card
-                key={doc.name}
-                className={`p-6 rounded-3xl border-0 transition-all duration-300 group ${
-                  doc.inactive
-                    ? 'bg-transparent border-dashed border-2 border-outline-variant/20 shadow-none'
-                    : 'bg-surface-container-lowest shadow-[0_20px_50px_rgba(5,150,105,0.03)] hover:shadow-[0_20px_50px_rgba(5,150,105,0.08)]'
-                }`}
-              >
-                <div className={`flex justify-between items-start mb-5 ${doc.inactive ? 'opacity-60' : ''}`}>
-                  <Avatar className={`w-14 h-14 rounded-xl ${doc.ringClass ? `ring-2 ${doc.ringClass} ring-offset-2 ring-offset-surface-container-lowest` : doc.inactive ? 'grayscale opacity-80' : ''}`}>
-                    <AvatarImage src={doc.photoUrl} className="object-cover" />
-                    <AvatarFallback className="rounded-xl">{doc.initials}</AvatarFallback>
-                  </Avatar>
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${doc.statusClass}`}>
-                    {doc.statusLabel}
-                  </span>
-                </div>
-                <h4 className={`text-lg font-bold text-on-surface leading-tight ${doc.inactive ? 'opacity-60' : ''}`}>{doc.name}</h4>
-                <p className={`text-sm text-on-surface-variant/80 mb-5 font-medium ${doc.inactive ? 'opacity-60' : ''}`}>{doc.specialty}</p>
-                <div className={`space-y-3 pt-4 border-t border-outline-variant/10 ${doc.inactive ? 'opacity-60' : ''}`}>
-                  {doc.meta.map((m) => (
-                    <div key={m.text} className={`flex items-center text-xs font-medium ${(m as any).highlight ? 'text-emerald-600 font-bold opacity-80' : 'text-on-surface-variant'}`}>
-                      <m.icon className="w-3.5 h-3.5 mr-2.5 shrink-0" />
-                      {m.text}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            ))}
+            {filteredTeam.length > 0 ? (
+              filteredTeam.map((doc) => <DoctorCard key={doc.id} doctor={doc} />)
+            ) : (
+              <div className="col-span-full py-20 text-center bg-surface-container-low/20 rounded-3xl border-2 border-dashed border-outline-variant/10">
+                <p className="text-sm text-on-surface-variant/50 font-medium italic">No se encontraron miembros del equipo</p>
+              </div>
+            )}
           </div>
 
           {/* Turnos de la Semana */}
           <div className="bg-surface-container-low/40 rounded-4xl p-8 border border-outline-variant/5">
             <div className="flex justify-between items-center mb-8">
-              <h3 className="text-xl font-bold text-on-surface">Turnos de la Semana</h3>
-              <Button variant="link" className="text-primary font-bold hover:text-primary/80 px-0 h-auto">
-                Ver Calendario Completo
+              <div>
+                <h3 className="text-xl font-bold text-on-surface">Turnos Semanales</h3>
+                <p className="text-xs text-on-surface-variant/60 mt-1 uppercase font-bold tracking-tighter">Asignación de Guardias</p>
+              </div>
+              <Button variant="link" className="text-primary font-bold hover:text-primary/80 px-0 h-auto text-sm">
+                Ver Gestión Completa
               </Button>
             </div>
-            <div className="space-y-3">
-              {SHIFTS.map((shift) => (
-                <div key={shift.title} className="flex items-center justify-between p-5 bg-surface-container-lowest rounded-2xl hover:bg-surface-container transition-colors group shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
-                  <div className="flex items-center space-x-5">
-                    <div className={`w-12 h-12 rounded-xl ${shift.dayColor} flex items-center justify-center font-black text-[13px] tracking-wider`}>
-                      {shift.dayLabel}
-                    </div>
-                    <div>
-                      <p className={`text-[15px] font-bold text-on-surface ${shift.hoverColor} transition-colors`}>{shift.title}</p>
-                      <p className="text-[13px] text-on-surface-variant/70 mt-1 font-medium">{shift.subtitle}</p>
-                    </div>
-                  </div>
-                  <div className="flex -space-x-3">
-                    {shift.avatars.map((src, i) => (
-                      <Avatar key={i} className="w-10 h-10 border-2 border-surface-container-lowest hover:z-20 transition-transform hover:scale-110">
-                        <AvatarImage src={src} className="object-cover" />
-                      </Avatar>
-                    ))}
-                    {shift.overflow && (
-                      <div className="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center text-[11px] font-bold text-on-surface-variant z-10">
-                        {shift.overflow}
+            <div className="grid gap-3">
+              {personnelData.shifts.map((shift) => {
+                const config = SHIFT_TYPE_CONFIG[shift.dayType as keyof typeof SHIFT_TYPE_CONFIG] || SHIFT_TYPE_CONFIG.morning;
+                return (
+                  <div key={shift.id} className="flex items-center justify-between p-5 bg-surface-container-lowest rounded-2xl hover:bg-surface-container transition-all group shadow-sm border border-outline-variant/5">
+                    <div className="flex items-center space-x-5">
+                      <div className={`w-12 h-12 rounded-xl ${config.color} flex items-center justify-center font-black text-sm tracking-wider shadow-sm`}>
+                        {shift.dayLabel}
                       </div>
-                    )}
+                      <div>
+                        <p className={`text-[15px] font-bold text-on-surface ${config.hover} transition-colors`}>{shift.title}</p>
+                        <p className="text-[13px] text-on-surface-variant/70 mt-1 font-medium">{shift.subtitle}</p>
+                      </div>
+                    </div>
+                    <div className="flex -space-x-3">
+                      {shift.avatars.map((src, i) => (
+                        <Avatar key={i} className="w-10 h-10 border-2 border-surface-container-lowest hover:z-20 transition-transform hover:scale-110 shadow-sm">
+                          <AvatarImage src={src} className="object-cover" />
+                          <AvatarFallback className="bg-surface-container" />
+                        </Avatar>
+                      ))}
+                      {shift.overflow && (
+                        <div className="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center text-[11px] font-black text-on-surface-variant z-10 shadow-sm">
+                          {shift.overflow}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* IA Optimization Panel */}
+        {/* ── Columna Derecha: Panel IA ───────────────────────────────────────── */}
         <aside className="col-span-12 lg:col-span-4 space-y-6">
-          <Card className="bg-surface-container-lowest/80 backdrop-blur-3xl p-7 rounded-4xl border border-primary/10 shadow-[0_30px_60px_rgba(5,150,105,0.08)] sticky top-28">
-            <div className="flex items-center space-x-4 mb-7">
-              <div className="w-13 h-13 rounded-2xl bg-linear-to-br from-primary to-tertiary-container flex items-center justify-center shadow-lg shadow-primary/30">
+          <Card className="bg-surface-container-lowest/80 backdrop-blur-3xl p-7 rounded-[40px] border border-primary/10 shadow-[0_30px_60px_rgba(5,150,105,0.08)] sticky top-28">
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-primary to-primary-container flex items-center justify-center shadow-lg shadow-primary/20">
                 <Bot className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-lg text-on-surface leading-tight">Optimización IA</h4>
-                <p className="text-[10px] uppercase font-black text-primary tracking-widest mt-1">Motor Sanctuary v2.4</p>
+                <h4 className="font-bold text-lg text-on-surface leading-tight">Gestión IA</h4>
+                <p className="text-[10px] uppercase font-black text-primary tracking-widest mt-1">
+                  {personnelData.stats.modelVersion}
+                </p>
               </div>
             </div>
 
-            <div className="bg-primary/5 rounded-2xl p-5 mb-7 border border-primary/10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-              <p className="text-sm text-on-surface/90 leading-relaxed font-medium pl-2">
-                "He detectado una saturación proyectada en Cardiología para este Jueves. Sugiero reasignar el turno de la Dra. Valdés para optimizar la espera."
+            <div className="bg-primary/5 rounded-2xl p-5 mb-8 border border-primary/10 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-primary" />
+              <p className="text-sm text-on-surface/90 leading-relaxed font-medium pl-2 italic">
+                "{personnelData.agentInsight}"
               </p>
             </div>
 
-            <h5 className="text-[11px] font-black uppercase tracking-wider text-on-surface-variant/60 mb-5 px-1">Sugerencias del Agente</h5>
+            <h5 className="text-[11px] font-black uppercase tracking-wider text-on-surface-variant/40 mb-6 px-1">Optimizaciones Sugeridas</h5>
 
             <div className="space-y-4">
-              {AI_SUGGESTIONS.map((s) => (
-                <div key={s.type} className="p-5 rounded-3xl bg-surface-container-lowest border border-outline-variant/15 shadow-sm hover:border-primary/40 hover:shadow-[0_10px_30px_rgba(5,150,105,0.06)] transition-all cursor-pointer">
+              {personnelData.aiSuggestions.map((s) => (
+                <div key={s.id} className="p-5 rounded-3xl bg-surface-container-lowest border border-outline-variant/15 shadow-sm hover:border-primary/40 transition-all">
                   <div className="flex items-center gap-2 mb-3">
-                    <s.icon className="w-3.5 h-3.5 text-primary" />
-                    <span className="text-xs font-bold text-primary">{s.type}</span>
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-[11px] font-bold text-primary uppercase tracking-wider">{s.type}</span>
                   </div>
-                  <p className="text-[13px] text-on-surface leading-relaxed mb-5 font-medium">{s.body}</p>
+                  <p className="text-[13px] text-on-surface leading-normal mb-5 font-medium">
+                    {s.body.split('**').map((part, i) => i % 2 === 1 ? <strong key={i} className="font-black text-primary">{part}</strong> : part)}
+                  </p>
                   <div className="flex space-x-2">
                     <Button className="flex-1 rounded-xl bg-primary text-white text-[11px] font-bold hover:bg-primary/90 h-9">
                       {s.actionLabel}
                     </Button>
-                    <Button variant="outline" size="icon" className="rounded-xl border-outline-variant/20 text-on-surface-variant hover:bg-error/10 hover:text-error hover:border-error/20 h-9 w-9">
+                    <Button variant="outline" size="icon" className="rounded-xl border-outline-variant/20 text-on-surface-variant hover:bg-red-50 hover:text-red-500 h-9 w-9">
                       <X className="w-4 h-4" />
                     </Button>
                   </div>
@@ -250,16 +315,20 @@ export function PersonalPage() {
               ))}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-outline-variant/10">
+            {/* Métricas de Eficiencia */}
+            <div className="mt-10 pt-8 border-t border-outline-variant/10">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-sm font-bold text-on-surface">Eficiencia del Equipo</span>
-                <span className="text-xl font-black text-primary tracking-tight">94%</span>
+                <span className="text-sm font-bold text-on-surface">Eficiencia de Guardia</span>
+                <span className="text-2xl font-black text-primary tracking-tight">{personnelData.stats.teamEfficiency}%</span>
               </div>
-              <div className="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden">
-                <div className="bg-primary h-full w-[94%] rounded-full shadow-[0_0_10px_rgba(5,150,105,0.4)]" />
+              <div className="w-full bg-surface-container h-3 rounded-full overflow-hidden p-0.5">
+                <div 
+                  className="bg-primary h-full rounded-full shadow-[0_0_15px_rgba(5,150,105,0.3)] transition-all duration-1000" 
+                  style={{ width: `${personnelData.stats.teamEfficiency}%` }}
+                />
               </div>
-              <p className="text-[11px] font-bold text-on-surface-variant/60 mt-4 text-center">
-                Incremento del 12% vs. mes anterior
+              <p className="text-[11px] font-bold text-on-surface-variant/50 mt-5 text-center">
+                ↑ {personnelData.stats.efficiencyIncrease}% vs. promedio histórico
               </p>
             </div>
           </Card>

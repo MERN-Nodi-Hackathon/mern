@@ -1,0 +1,98 @@
+{
+  "stats": [
+    { "id": "total",      "label": "Total",       "value": "1,284", "sub": "Pacientes registrados" },
+    { "id": "confirmed",  "label": "Confirmados",  "value": "842",   "sub": "Para esta semana" },
+    { "id": "pending",    "label": "Pendientes",   "value": "56",    "sub": "Requieren atención" },
+    { "id": "new",        "label": "Nuevos",       "value": "12",    "sub": "Este mes" }
+  ],
+  "patients": [
+    {
+      "id": "VA-2024-001",
+      "name": "Elena Rodriguez",
+      "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCtZVJE7DU6xEzrMTBSXN2gf1uBe6xKIWoq8tIvJT9BMzEJnolAIAsixesD8ZLhZ2hbAMPf8DTi7-z4KrJseBdNs9D2yra6cFHXGDrSAT4oMVAwDFmZsSiijfeBzhpXO8Y613u7F77qATNqRkkPcOKP860PCYSmoXz-z3vBlN0aOrlrXlMPaq4FY6gkT9WTo5Tay6RsLhT0fd5NFNb8bfHGKo-NvfWr1y--_eGgUY7oAX2hD1hojN-RmnVWMMZiQuQaJvPXMsJOVdcQ",
+      "age": 42,
+      "category": "general",
+      "lastVisit": { "date": "12 Oct, 2023", "reason": "Chequeo General" },
+      "nextVisit": { "date": "24 Mar, 09:00", "status": "confirmed" },
+      "email": "elena.r@email.com",
+      "phone": "+52 55 1234 5678"
+    },
+    {
+      "id": "VA-2024-042",
+      "name": "Carlos Méndez",
+      "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDoiIqCSMELTCYZCC5x9pvd2BuIfdJtHtOlW-BS96E2Qn6fCqxMYpRBnfqvxGh_MilPOYliDyA1AF48wj89ABVQQyxNfADQHroWquZdQs9bIOaBrwspEFiRJMnQXxMS8Tz6Qurb4g2VFFL7FpABaqdIXGFHNHpHM6pexevqN3ROA_fiLIMkA2doUFL9R0ECtV1MW6FEo_tnYcY4uNPrnum9G6-Qkpo1B5B5FEl1NMwj_GNAL6WNNfjdDbVVHL8OGrNN2vDnsCAmB4ta",
+      "age": 68,
+      "category": "chronic",
+      "lastVisit": { "date": "05 Feb, 2024", "reason": "Post-operatorio" },
+      "nextVisit": { "date": "28 Mar, 11:30", "status": "pending" },
+      "email": "c.mendez@email.com",
+      "phone": "+52 33 9876 5432"
+    },
+    {
+      "id": "VA-2024-089",
+      "name": "Sofía Morales",
+      "photoUrl": "",
+      "age": 29,
+      "category": "general",
+      "lastVisit": { "date": "", "reason": "" },
+      "nextVisit": { "date": "Hoy, 16:45", "status": "new" },
+      "email": "sofia.m@email.com",
+      "phone": "+52 55 4567 8901"
+    },
+    {
+      "id": "VA-2023-956",
+      "name": "Javier Ortiz",
+      "photoUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBgiuLH_kqMnMAm-hjr_-rOtNxW5iEOVyhtUgJ6Pmspl3LybqLQnUnEsGHcXGZZ48AGTxU_FJ0_AQKlnEKOXM6eQAQKvmZCni4Hploa62g27RZ1NCEztbe5Bm63K6fspsOdRPDSUDA7VLViCl0Ig203pyixulI-SIWPVt_CuToCS_fNWxfDRwjq1F4BciVMOlq68eUqSGYInJlaSWgV_Q3s0zhCM439sXPTbjOcqeiHe_pskPFVETtl9HwMkBxehl_B-hhonY2_i8Zs",
+      "age": 35,
+      "category": "urgent",
+      "lastVisit": { "date": "20 Feb, 2024", "reason": "Revisión RM" },
+      "nextVisit": { "date": "", "status": "none" },
+      "email": "j.ortiz@email.com",
+      "phone": "+52 81 3456 7890"
+    },
+    {
+      "id": "VA-2024-120",
+      "name": "Mariana Torres",
+      "photoUrl": "",
+      "age": 54,
+      "category": "chronic",
+      "lastVisit": { "date": "01 Mar, 2024", "reason": "Control Diabetes" },
+      "nextVisit": { "date": "15 Abr, 10:00", "status": "confirmed" },
+      "email": "m.torres@email.com",
+      "phone": "+52 55 6789 0123"
+    },
+    {
+      "id": "VA-2024-133",
+      "name": "Roberto Aguilar",
+      "photoUrl": "",
+      "age": 47,
+      "category": "urgent",
+      "lastVisit": { "date": "10 Mar, 2024", "reason": "Dolor torácico" },
+      "nextVisit": { "date": "Mañana, 08:00", "status": "pending" },
+      "email": "r.aguilar@email.com",
+      "phone": "+52 33 2345 6789"
+    },
+    {
+      "id": "VA-2023-874",
+      "name": "Ana Gutiérrez",
+      "photoUrl": "",
+      "age": 63,
+      "category": "general",
+      "lastVisit": { "date": "08 Mar, 2024", "reason": "Chequeo Anual" },
+      "nextVisit": { "date": "08 Jun, 09:30", "status": "confirmed" },
+      "email": "a.gutierrez@email.com",
+      "phone": "+52 55 8901 2345"
+    },
+    {
+      "id": "VA-2024-201",
+      "name": "Luis Ramírez",
+      "photoUrl": "",
+      "age": 31,
+      "category": "general",
+      "lastVisit": { "date": "", "reason": "" },
+      "nextVisit": { "date": "Hoy, 14:00", "status": "new" },
+      "email": "l.ramirez@email.com",
+      "phone": "+52 81 4567 8901"
+    }
+  ]
+}
