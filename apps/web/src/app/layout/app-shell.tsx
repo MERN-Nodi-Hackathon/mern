@@ -1,26 +1,30 @@
 import { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Calendar, 
-  Bot, 
-  Users, 
-  Settings, 
-  Plus, 
-  Search, 
-  Bell, 
-  ActivitySquare, 
-  Menu, 
-  X, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  Calendar,
+  Bot,
+  Users,
+  Settings,
+  Plus,
+  Search,
+  Bell,
+  ActivitySquare,
+  Menu,
+  X,
+  LogOut,
   ChevronDown,
   CheckCircle2,
   Clock,
-  ShieldCheck
+  ShieldCheck,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { getCurrentUser, getCompanyInfo, logout } from '@/services/auth.service';
+import {
+  getCurrentUser,
+  getCompanyInfo,
+  logout,
+} from '@/services/auth.service';
 import { getNotifications } from '@/services/clinic.service';
 import { Clinic, User, InboxNotification } from '@/types/models';
 import { useEffect } from 'react';
@@ -40,11 +44,11 @@ export function AppShell() {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  
+
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [notifications, setNotifications] = useState<InboxNotification[]>([]);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,7 +56,7 @@ export function AppShell() {
       const [companyData, userData, notifsData] = await Promise.all([
         getCompanyInfo(),
         getCurrentUser(),
-        getNotifications()
+        getNotifications(),
       ]);
       setClinic(companyData); // Resolved any cast
       setUser(userData);
@@ -63,11 +67,13 @@ export function AppShell() {
 
   const searchablePages = [
     ...navigation,
-    { to: '/terms', label: 'Términos y Condiciones', icon: ShieldCheck }
+    { to: '/terms', label: 'Términos y Condiciones', icon: ShieldCheck },
   ];
 
-  const filteredPages = searchablePages.filter(page => 
-    page.label.toLowerCase().includes(searchQuery.toLowerCase()) && searchQuery.length > 0
+  const filteredPages = searchablePages.filter(
+    (page) =>
+      page.label.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      searchQuery.length > 0,
   );
 
   const handleLogout = async () => {
@@ -79,32 +85,35 @@ export function AppShell() {
     <div className="flex min-h-screen bg-surface text-on-surface">
       {/* Mobile background overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden backdrop-blur-sm"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       {/* SideNavBar */}
-      <aside className={cn(
-        "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-surface-container-low px-4 py-8 transition-transform duration-300 md:translate-x-0 outline-none",
-        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
+      <aside
+        className={cn(
+          'fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-surface-container-low px-4 py-8 transition-transform duration-300 md:translate-x-0 outline-none',
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full',
+        )}
+      >
         <div className="mb-10 px-2 flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-bold tracking-tighter text-on-surface">{clinic?.brandName || '...'}</h1>
-            <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-              {clinic?.slogan || 'Cargando...'}
-            </p>
-          </div>
-          <button 
+          <NavLink to="/dashboard" className="block outline-none">
+            <img
+              src="https://res.cloudinary.com/dkoqe8las/image/upload/v1775572969/logo_h_vitalagent_e5dfft.png"
+              alt="vitalAgent Logo"
+              className="h-14 w-auto object-contain"
+            />
+          </NavLink>
+          <button
             className="md:hidden text-on-surface-variant"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
-        
+
         <nav className="flex-1 space-y-1">
           {navigation.map(({ to, label, icon: Icon }) => (
             <NavLink
@@ -115,7 +124,7 @@ export function AppShell() {
                   'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors',
                   isActive
                     ? 'font-semibold text-primary bg-primary/10'
-                    : 'font-medium text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface'
+                    : 'font-medium text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface',
                 )
               }
             >
@@ -141,7 +150,7 @@ export function AppShell() {
         {/* TopNavBar */}
         <header className="fixed right-0 top-0 z-30 flex h-16 w-full md:w-[calc(100%-16rem)] items-center justify-between bg-surface/80 px-4 md:px-8 shadow-[0_20px_50px_rgba(5,150,105,0.05)] backdrop-blur-xl">
           <div className="flex flex-1 items-center gap-4">
-            <button 
+            <button
               className="md:hidden text-on-surface hover:text-primary transition-colors"
               onClick={() => setIsMobileMenuOpen(true)}
             >
@@ -178,14 +187,16 @@ export function AppShell() {
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-6">
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                 className={cn(
-                  "relative flex items-center gap-2 p-2 rounded-xl transition-all",
-                  isNotificationsOpen ? "bg-primary/10 text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
+                  'relative flex items-center gap-2 p-2 rounded-xl transition-all',
+                  isNotificationsOpen
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-on-surface-variant hover:bg-surface-container-high',
                 )}
               >
                 <Bell className="w-5 h-5 shrink-0" />
@@ -196,24 +207,41 @@ export function AppShell() {
               {isNotificationsOpen && (
                 <div className="absolute top-full right-0 mt-3 w-80 bg-surface-container-lowest rounded-3xl shadow-[0_30px_60px_rgba(5,150,105,0.2)] border border-outline-variant/10 overflow-hidden z-50 p-2">
                   <div className="px-4 py-3 flex justify-between items-center border-b border-outline-variant/5">
-                    <span className="font-bold text-xs text-on-surface">Notificaciones</span>
+                    <span className="font-bold text-xs text-on-surface">
+                      Notificaciones
+                    </span>
                     <span className="text-[10px] font-black uppercase tracking-tighter text-primary">
-                      {notifications.filter(n => !n.isRead).length} Nuevas
+                      {notifications.filter((n) => !n.isRead).length} Nuevas
                     </span>
                   </div>
                   <div className="max-h-72 overflow-y-auto">
                     {notifications.map((notif) => (
-                      <div key={notif.id} className="p-3 rounded-2xl hover:bg-surface-container-low transition-all group">
+                      <div
+                        key={notif.id}
+                        className="p-3 rounded-2xl hover:bg-surface-container-low transition-all group"
+                      >
                         <div className="flex gap-3">
-                          <div className={cn(
-                            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-                            notif.isRead ? "bg-surface-container-high" : "bg-primary/10 text-primary"
-                          )}>
-                            {notif.isRead ? <Clock className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                          <div
+                            className={cn(
+                              'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
+                              notif.isRead
+                                ? 'bg-surface-container-high'
+                                : 'bg-primary/10 text-primary',
+                            )}
+                          >
+                            {notif.isRead ? (
+                              <Clock className="w-4 h-4" />
+                            ) : (
+                              <CheckCircle2 className="w-4 h-4" />
+                            )}
                           </div>
                           <div>
-                            <p className="text-[11px] font-medium text-on-surface leading-snug">{notif.message}</p>
-                            <p className="text-[10px] text-on-surface-variant/60 mt-1">{notif.time}</p>
+                            <p className="text-[11px] font-medium text-on-surface leading-snug">
+                              {notif.message}
+                            </p>
+                            <p className="text-[10px] text-on-surface-variant/60 mt-1">
+                              {notif.time}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -226,7 +254,7 @@ export function AppShell() {
             <div className="h-6 w-px bg-outline-variant/30"></div>
 
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2.5 p-1 px-2 rounded-xl hover:bg-surface-container-high transition-all"
               >
@@ -247,8 +275,12 @@ export function AppShell() {
               {isProfileOpen && (
                 <div className="absolute top-full right-0 mt-3 w-48 bg-surface-container-lowest rounded-2xl shadow-[0_30px_60px_rgba(5,150,105,0.2)] border border-outline-variant/10 overflow-hidden z-50 p-1.5">
                   <div className="px-3 py-2 border-b border-outline-variant/5 mb-1">
-                    <p className="text-[11px] font-bold text-on-surface">{user?.fullName || 'Cargando...'}</p>
-                    <p className="text-[10px] text-on-surface-variant truncate">{user?.role || '...'}</p>
+                    <p className="text-[11px] font-bold text-on-surface">
+                      {user?.fullName || 'Cargando...'}
+                    </p>
+                    <p className="text-[10px] text-on-surface-variant truncate">
+                      {user?.role || '...'}
+                    </p>
                   </div>
                   <button
                     onClick={handleLogout}

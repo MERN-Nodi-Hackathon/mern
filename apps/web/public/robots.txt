@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Host: https://vitalagent.ai
+Sitemap: https://vitalagent.ai/sitemap.xml

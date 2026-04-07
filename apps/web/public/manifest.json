@@ -1,0 +1,16 @@
+{
+  "name": "vitalAgent",
+  "short_name": "vitalAgent",
+  "description": "Agente inteligente de agendas para clínicas.",
+  "icons": [
+    {
+      "src": "/logo_vitalagent.ico",
+      "sizes": "192x192 512x512",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#3b82f6",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
