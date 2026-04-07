@@ -14,6 +14,8 @@ import { SectionIconCard } from '@/components/ui/section-icon-card';
 import { getCompanyInfo, getCurrentUser } from '@/services/auth.service';
 import { getPreferences, getBillingInfo } from '../../services/settings.service';
 import { Clinic, User, UserPreferences, BillingInfo } from '@/types/models';
+import { client } from '@/lib/supabase/client';
+import { getClinicIdForCurrentSession } from '@/lib/supabase/db';
 
 interface ToggleRowProps {
   label: string;
@@ -42,6 +44,14 @@ export function SettingsPage() {
   const [company, setCompany] = useState<Clinic | null>(null);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [billing, setBilling] = useState<BillingInfo | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState<any>({
+    name: '',
+    brand_name: '',
+    description: '',
+    phone_prefix: '',
+    address: ''
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,10 +64,60 @@ export function SettingsPage() {
       setCompany(comp);
       setPreferences(pref);
       setBilling(bill);
+      if (comp) {
+        setFormData({
+          name: comp.name || '',
+          brand_name: comp.brandName || '',
+          description: comp.description || '',
+          phone_prefix: comp.phone || '',
+          address: comp.address || ''
+        });
+      }
       setIsLoading(false);
     };
     fetchData();
   }, []);
+
+  const handleSaveClinic = async () => {
+    setIsSaving(true);
+    try {
+      const supabase = client;
+      if (!supabase) throw new Error('Supabase no configurado');
+
+      const clinicId = await getClinicIdForCurrentSession();
+      if (!clinicId) throw new Error('No se encontró clínica');
+
+      const { error } = await supabase
+        .from('clinics')
+        .update({
+          name: formData.name,
+          brand_name: formData.brand_name,
+          description: formData.description,
+          phone_prefix: formData.phone_prefix,
+          address: formData.address,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', clinicId);
+
+      if (error) throw error;
+
+      setCompany({
+        ...company,
+        name: formData.name,
+        brandName: formData.brand_name,
+        description: formData.description,
+        phone: formData.phone_prefix,
+        address: formData.address
+      } as Clinic);
+      
+      alert('Información de clínica guardada exitosamente');
+    } catch (err: any) {
+      console.error('Error guardando clínica:', err.message);
+      alert('Error al guardar: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -76,9 +136,13 @@ export function SettingsPage() {
         title="Panel de Control"
         description="Gestione la identidad, seguridad y operativa de su clínica."
         action={
-          <Button className="bg-linear-to-br from-tertiary to-tertiary-container text-white px-8 py-6 rounded-xl font-bold shadow-lg shadow-tertiary/20 hover:scale-[1.02] active:scale-95 transition-all text-base">
+          <Button 
+            onClick={handleSaveClinic}
+            disabled={isSaving}
+            className="bg-linear-to-br from-tertiary to-tertiary-container text-white px-8 py-6 rounded-xl font-bold shadow-lg shadow-tertiary/20 hover:scale-[1.02] active:scale-95 transition-all text-base disabled:opacity-50"
+          >
             <Save className="w-5 h-5 mr-2" />
-            Guardar Cambios
+            {isSaving ? 'Guardando...' : 'Guardar Cambios'}
           </Button>
         }
       />
@@ -94,38 +158,44 @@ export function SettingsPage() {
           <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1 space-y-2">
               <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Nombre de la Clínica</Label>
-              <Input className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue={company?.name} />
+              <Input 
+                className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" 
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+              />
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Especialidad Principal</Label>
-              <div className="relative">
-                <select 
-                  className="w-full px-4 py-3.5 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface appearance-none text-base outline-none cursor-pointer"
-                  defaultValue={company?.shortName} // Using shortName as placeholder for specialty if not in CompanyInfo
-                >
-                  <option value="Medicina Interna">Medicina Interna</option>
-                  <option value="Cardiología">Cardiología</option>
-                  <option value="Pediatría">Pediatría</option>
-                  <option value="Neurología">Neurología</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-on-surface-variant">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                  </svg>
-                </div>
-              </div>
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Marca de la Clínica</Label>
+              <Input 
+                className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" 
+                value={formData.brand_name}
+                onChange={(e) => setFormData({...formData, brand_name: e.target.value})}
+              />
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Correo Electrónico</Label>
-              <Input type="email" className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue={company?.address} /> // Placeholder email mapping
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Descripción</Label>
+              <Input 
+                className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" 
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+              />
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Teléfono de Contacto</Label>
-              <Input type="tel" className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue="+52 55 1234 5678" />
+              <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Prefijo Telefónico</Label>
+              <Input 
+                type="tel" 
+                className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" 
+                value={formData.phone_prefix}
+                onChange={(e) => setFormData({...formData, phone_prefix: e.target.value})}
+              />
             </div>
             <div className="col-span-2 space-y-2">
               <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Dirección Física</Label>
-              <Input className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" defaultValue={company?.address} />
+              <Input 
+                className="w-full px-4 py-6 rounded-xl bg-surface-container-highest/50 border-0 font-medium text-on-surface text-base" 
+                value={formData.address}
+                onChange={(e) => setFormData({...formData, address: e.target.value})}
+              />
             </div>
           </div>
         </SectionIconCard>

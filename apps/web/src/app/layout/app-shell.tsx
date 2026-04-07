@@ -26,8 +26,14 @@ import {
   logout,
 } from '@/services/auth.service';
 import { getNotifications } from '@/services/clinic.service';
+import { getPatients } from '@/services/patient.service';
+import { getMedicalTeam } from '@/services/staff.service';
+import { getEvents, createAppointment } from '@/services/calendar.service';
 import { Clinic, User, InboxNotification } from '@/types/models';
 import { useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
 const navigation = [
   { to: '/dashboard', label: 'Inicio', icon: LayoutDashboard },
@@ -44,6 +50,18 @@ export function AppShell() {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showNewAppointmentModal, setShowNewAppointmentModal] = useState(false);
+  const [isCreatingAppointment, setIsCreatingAppointment] = useState(false);
+  const [formData, setFormData] = useState({
+    patientId: '',
+    providerId: '',
+    startDate: '',
+    startTime: '',
+    endTime: '',
+    notes: '',
+  });
+  const [patients, setPatients] = useState<any[]>([]);
+  const [providers, setProviders] = useState<any[]>([]);
 
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -58,12 +76,26 @@ export function AppShell() {
         getCurrentUser(),
         getNotifications(),
       ]);
-      setClinic(companyData); // Resolved any cast
+      setClinic(companyData);
       setUser(userData);
       setNotifications(notifsData);
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (showNewAppointmentModal) {
+      const fetchData = async () => {
+        const [patientsData, staffData] = await Promise.all([
+          getPatients(),
+          getMedicalTeam(),
+        ]);
+        setPatients(patientsData);
+        setProviders(staffData);
+      };
+      fetchData();
+    }
+  }, [showNewAppointmentModal]);
 
   const searchablePages = [
     ...navigation,
@@ -75,6 +107,48 @@ export function AppShell() {
       page.label.toLowerCase().includes(searchQuery.toLowerCase()) &&
       searchQuery.length > 0,
   );
+
+  const handleCreateAppointment = async () => {
+    if (!formData.patientId || !formData.providerId || !formData.startDate || !formData.startTime) {
+      alert('Por favor completa todos los campos requeridos');
+      return;
+    }
+
+    setIsCreatingAppointment(true);
+    try {
+      const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
+      const endDateTime = new Date(`${formData.startDate}T${formData.endTime || '17:00'}`);
+
+      const result = await createAppointment({
+        patientId: parseInt(formData.patientId),
+        providerId: parseInt(formData.providerId),
+        serviceId: 1, // Default service, could be extended
+        startTime: startDateTime,
+        endTime: endDateTime,
+        notes: formData.notes,
+      });
+
+      if (result.success) {
+        alert('Cita creada exitosamente');
+        setShowNewAppointmentModal(false);
+        setFormData({
+          patientId: '',
+          providerId: '',
+          startDate: '',
+          startTime: '',
+          endTime: '',
+          notes: '',
+        });
+        // Optionally refresh events
+      } else {
+        alert('Error: ' + result.error);
+      }
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    } finally {
+      setIsCreatingAppointment(false);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -138,7 +212,9 @@ export function AppShell() {
           ))}
         </nav>
         <div className="mt-auto px-2">
-          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-br from-primary to-primary-container px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(5,150,105,0.15)] transition-all hover:opacity-90 active:scale-[0.98]">
+          <button 
+            onClick={() => setShowNewAppointmentModal(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-br from-primary to-primary-container px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_20px_rgba(5,150,105,0.15)] transition-all hover:opacity-90 active:scale-[0.98]">
             <Plus className="w-5 h-5" />
             Nueva Cita
           </button>
@@ -300,6 +376,111 @@ export function AppShell() {
           <Outlet />
         </div>
       </main>
+
+      {/* Modal de Nueva Cita */}
+      {showNewAppointmentModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl max-w-md w-full shadow-2xl">
+            <div className="sticky top-0 bg-surface-container-low border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-on-surface">Nueva Cita</h2>
+              <button 
+                onClick={() => setShowNewAppointmentModal(false)}
+                className="text-on-surface-variant hover:bg-surface-container-highest p-2 rounded-lg"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-on-surface">Paciente *</Label>
+                <select 
+                  value={formData.patientId}
+                  onChange={(e) => setFormData({...formData, patientId: e.target.value})}
+                  className="w-full px-4 py-2 rounded-lg bg-surface-container-highest border-0 text-on-surface text-sm"
+                >
+                  <option value="">Seleccionar paciente...</option>
+                  {patients.map((p: any) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-on-surface">Médico/Provider *</Label>
+                <select 
+                  value={formData.providerId}
+                  onChange={(e) => setFormData({...formData, providerId: e.target.value})}
+                  className="w-full px-4 py-2 rounded-lg bg-surface-container-highest border-0 text-on-surface text-sm"
+                >
+                  <option value="">Seleccionar médico...</option>
+                  {providers.map((p: any) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-on-surface">Fecha *</Label>
+                <Input
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                  className="w-full px-4 py-2 rounded-lg bg-surface-container-highest border-0 text-on-surface text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold text-on-surface">Inicio *</Label>
+                  <Input
+                    type="time"
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({...formData, startTime: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-surface-container-highest border-0 text-on-surface text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold text-on-surface">Fin</Label>
+                  <Input
+                    type="time"
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({...formData, endTime: e.target.value})}
+                    className="w-full px-4 py-2 rounded-lg bg-surface-container-highest border-0 text-on-surface text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-on-surface">Notas</Label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  className="w-full px-4 py-2 rounded-lg bg-surface-container-highest border-0 text-on-surface text-sm"
+                  rows={3}
+                  placeholder="Notas adicionales..."
+                />
+              </div>
+            </div>
+
+            <div className="bg-surface-container-low border-t border-outline-variant/10 px-6 py-4 flex gap-3 justify-end">
+              <Button 
+                variant="outline"
+                onClick={() => setShowNewAppointmentModal(false)}
+                className="px-6 py-2 text-sm font-bold"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleCreateAppointment}
+                disabled={isCreatingAppointment}
+                className="px-6 py-2 text-sm font-bold bg-primary text-white hover:bg-primary/90"
+              >
+                {isCreatingAppointment ? 'Creando...' : 'Crear Cita'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

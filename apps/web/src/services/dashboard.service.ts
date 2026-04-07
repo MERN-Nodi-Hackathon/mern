@@ -1,4 +1,5 @@
 import { client } from '@/lib/supabase/client';
+import { getClinicIdForCurrentSession } from '@/lib/supabase/db';
 import { DashboardStats, RecentActivity, AIPulseMetric, AIThread } from '@/types/models';
 
 type AppointmentActivityRow = {
@@ -48,11 +49,11 @@ function appointmentStatusStyles(status: string | null | undefined) {
   }
 }
 
-async function countAppointments(filters: { gte?: string; lt?: string; status?: string } = {}): Promise<number | null> {
+async function countAppointments(clinicId: number, filters: { gte?: string; lt?: string; status?: string } = {}): Promise<number | null> {
   const supabase = ensureClient();
   if (!supabase) return null;
 
-  let query = supabase.from('appointments').select('id', { count: 'exact', head: true });
+  let query = supabase.from('appointments').select('id', { count: 'exact', head: true }).eq('clinic_id', clinicId);
 
   if (filters.gte) query = query.gte('start_time', filters.gte);
   if (filters.lt) query = query.lt('start_time', filters.lt);
@@ -88,22 +89,31 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     };
   }
 
+  const clinicId = await getClinicIdForCurrentSession();
+  if (!clinicId) {
+    console.warn('📊 Dashboard: No clinic found for current session, using mock data');
+    return {
+      todayAppointments: 12,
+      appointmentGrowth: '+15% vs ayer',
+      aiConversionRate: '78%',
+      activeClinics: 1,
+      locationsCount: 1,
+    };
+  }
+
   const todayRange = toISODateRange(new Date());
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayRange = toISODateRange(yesterday);
 
-  const [dailyStatsResponse, clinicCount, todayAppointments, yesterdayAppointments, scheduledCount, totalCount] = await Promise.all([
-    supabase.from('v_daily_stats').select('appointments_today').maybeSingle(),
-    supabase.from('clinics').select('id', { count: 'exact', head: true }),
-    countAppointments({ gte: todayRange.start, lt: todayRange.end }),
-    countAppointments({ gte: yesterdayRange.start, lt: yesterdayRange.end }),
-    countAppointments({ status: 'scheduled' }),
-    countAppointments(),
+  const [todayAppointments, yesterdayAppointments, scheduledCount, totalCount] = await Promise.all([
+    countAppointments(clinicId, { gte: todayRange.start, lt: todayRange.end }),
+    countAppointments(clinicId, { gte: yesterdayRange.start, lt: yesterdayRange.end }),
+    countAppointments(clinicId, { status: 'scheduled' }),
+    countAppointments(clinicId),
   ]);
 
-  if (dailyStatsResponse.error || clinicCount.error ||
-      todayAppointments === null || yesterdayAppointments === null ||
+  if (todayAppointments === null || yesterdayAppointments === null ||
       scheduledCount === null || totalCount === null) {
     console.warn('📊 Dashboard: Supabase query falló, usando datos mock.');
     return {
@@ -124,11 +134,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     : '0%';
 
   return {
-    todayAppointments: dailyStatsResponse.data?.appointments_today ?? todayAppointments,
+    todayAppointments,
     appointmentGrowth,
     aiConversionRate,
-    activeClinics: clinicCount.count ?? 0,
-    locationsCount: clinicCount.count ?? 0,
+    activeClinics: 1,
+    locationsCount: 1,
   };
 }
 
@@ -156,11 +166,18 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
     ];
   }
 
+  const clinicId = await getClinicIdForCurrentSession();
+  if (!clinicId) {
+    console.warn('getRecentActivity: No clinic found');
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('appointments')
     .select(
       `id, status, start_time, notes, patient:patients(name), provider:providers(name), service:services(name)`
     )
+    .eq('clinic_id', clinicId)
     .order('start_time', { ascending: false })
     .limit(4);
 
@@ -239,11 +256,20 @@ export async function getAIPulse(): Promise<{ metrics: AIPulseMetric[], threads:
     };
   }
 
+  const clinicId = await getClinicIdForCurrentSession();
+  if (!clinicId) {
+    console.warn('getAIPulse: No clinic found');
+    return {
+      metrics: [],
+      threads: []
+    };
+  }
+
   const [totalCount, scheduledCount, pendingCount, completedCount] = await Promise.all([
-    countAppointments(),
-    countAppointments({ status: 'scheduled' }),
-    countAppointments({ status: 'pending' }),
-    countAppointments({ status: 'completed' }),
+    countAppointments(clinicId),
+    countAppointments(clinicId, { status: 'scheduled' }),
+    countAppointments(clinicId, { status: 'pending' }),
+    countAppointments(clinicId, { status: 'completed' }),
   ]);
 
   if (totalCount === null || scheduledCount === null || pendingCount === null || completedCount === null) {

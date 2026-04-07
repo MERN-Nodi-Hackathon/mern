@@ -13,6 +13,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getEvents } from '@/services/calendar.service';
 import { CalendarEvent, EventType, FilterType } from '@/types/models';
 
+type ViewMode = 'day' | 'week' | 'month';
+
 // ─── Constantes ────────────────────────────────────────────────────────────────
 
 /** Horas laborales mostradas en el grid (12:00 es descanso, se renderiza aparte) */
@@ -32,6 +34,26 @@ const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
   { value: 'internal', label: 'Interno' },
   { value: 'blocked', label: 'Bloqueado' },
 ];
+
+/** Devuelve el primer día del mes (ajustado al lunes anterior si es necesario para llenar la grilla) */
+function getMonthStart(date: Date): Date {
+  const d = new Date(date.getFullYear(), date.getMonth(), 1);
+  return getWeekStart(d);
+}
+
+/** Devuelve un array de 42 fechas (6 semanas × 7 días) para un mes completo */
+function getMonthDays(monthStart: Date): Date[] {
+  return Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(monthStart);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+}
+
+/** Genera el label del mes visible (ej. "Abril 2026") */
+function getMonthLabel(date: Date): string {
+  return `${MONTH_NAMES_ES[date.getMonth()]} ${date.getFullYear()}`;
+}
 
 // ─── Helpers de fecha ──────────────────────────────────────────────────────────
 
@@ -113,7 +135,10 @@ export function CalendarPage() {
     return d;
   }, []);
 
+  const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [weekStart, setWeekStart] = useState<Date>(() => getWeekStart(today));
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const [monthStart, setMonthStart] = useState<Date>(() => getMonthStart(today));
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -128,12 +153,57 @@ export function CalendarPage() {
     fetchData();
   }, []);
 
+  // Navegación por vista
+  const handlePrevious = () => {
+    if (viewMode === 'day') {
+      const prev = new Date(selectedDate);
+      prev.setDate(prev.getDate() - 1);
+      setSelectedDate(prev);
+    } else if (viewMode === 'week') {
+      goToPrevWeek();
+    } else {
+      const prev = new Date(monthStart);
+      prev.setMonth(prev.getMonth() - 1);
+      setMonthStart(getMonthStart(prev));
+    }
+  };
+
+  const handleNext = () => {
+    if (viewMode === 'day') {
+      const next = new Date(selectedDate);
+      next.setDate(next.getDate() + 1);
+      setSelectedDate(next);
+    } else if (viewMode === 'week') {
+      goToNextWeek();
+    } else {
+      const next = new Date(monthStart);
+      next.setMonth(next.getMonth() + 1);
+      setMonthStart(getMonthStart(next));
+    }
+  };
+
+  const handleToday = () => {
+    setSelectedDate(today);
+    setWeekStart(getWeekStart(today));
+    setMonthStart(getMonthStart(today));
+  };
+
   // Días visibles de la semana actual
   const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart]);
   const weekLabel = useMemo(() => getWeekRangeLabel(weekDays), [weekDays]);
   const isCurrentWeek = useMemo(
     () => toDateKey(weekStart) === toDateKey(getWeekStart(today)),
     [weekStart, today]
+  );
+
+  const isCurrentDay = useMemo(() => toDateKey(selectedDate) === toDateKey(today), [selectedDate, today]);
+  const dayLabel = useMemo(() => `${selectedDate.getDate()} ${MONTH_NAMES_ES[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`, [selectedDate]);
+
+  const monthLabel = useMemo(() => getMonthLabel(monthStart), [monthStart]);
+  const monthDays = useMemo(() => getMonthDays(monthStart), [monthStart]);
+  const isCurrentMonth = useMemo(
+    () => monthStart.getMonth() === today.getMonth() && monthStart.getFullYear() === today.getFullYear(),
+    [monthStart, today]
   );
 
   // Mapa de todos los eventos: "YYYY-MM-DD-HH" → CalendarEvent
@@ -155,8 +225,14 @@ export function CalendarPage() {
     return filtered;
   }, [eventsMap, activeFilter]);
 
+  // Helper para obtener evento
+  const getEvent = (day: Date, hour: number): CalendarEvent | undefined =>
+    filteredEventsMap.get(`${toDateKey(day)}-${hour}`);
 
-  // Navegación de semanas
+  const isToday = (day: Date) => toDateKey(day) === toDateKey(today);
+  const isWeekend = (day: Date) => day.getDay() === 0 || day.getDay() === 6;
+
+  // Navegación de semanas (mantenidas originales)
   const goToPrevWeek = () =>
     setWeekStart((d) => {
       const n = new Date(d);
@@ -171,12 +247,6 @@ export function CalendarPage() {
     });
   const goToToday = () => setWeekStart(getWeekStart(today));
 
-  const getEvent = (day: Date, hour: number): CalendarEvent | undefined =>
-    filteredEventsMap.get(`${toDateKey(day)}-${hour}`);
-
-  const isToday = (day: Date) => toDateKey(day) === toDateKey(today);
-  const isWeekend = (day: Date) => day.getDay() === 0 || day.getDay() === 6;
-
   return (
     <div className="flex flex-col gap-8 w-full max-w-[1600px] mx-auto">
 
@@ -187,35 +257,35 @@ export function CalendarPage() {
             Vista General del Horario
           </h2>
           <div className="flex items-center gap-4 mt-3">
-            {/* Paginador de semanas */}
+            {/* Paginador */}
             <div className="flex items-center bg-surface-container-low p-1 rounded-xl">
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-on-surface-variant hover:bg-white"
-                onClick={goToPrevWeek}
-                aria-label="Semana anterior"
+                onClick={handlePrevious}
+                aria-label="Anterior"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
               <span className="px-4 font-semibold text-on-surface text-sm min-w-48 text-center">
-                {weekLabel}
+                {viewMode === 'day' ? dayLabel : viewMode === 'week' ? weekLabel : monthLabel}
               </span>
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-on-surface-variant hover:bg-white"
-                onClick={goToNextWeek}
-                aria-label="Semana siguiente"
+                onClick={handleNext}
+                aria-label="Siguiente"
               >
                 <ChevronRight className="w-5 h-5" />
               </Button>
             </div>
-            {/* Botón Hoy — sólo activo si no estamos en la semana actual */}
+            {/* Botón Hoy */}
             <Button
               variant="ghost"
-              onClick={goToToday}
-              disabled={isCurrentWeek}
+              onClick={handleToday}
+              disabled={(viewMode === 'day' && isCurrentDay) || (viewMode === 'week' && isCurrentWeek) || (viewMode === 'month' && isCurrentMonth)}
               className="font-medium text-primary hover:bg-primary/5 text-sm rounded-xl disabled:opacity-40"
             >
               Hoy
@@ -223,25 +293,38 @@ export function CalendarPage() {
           </div>
         </div>
 
-        {/* Selector de vista (solo Semana funcional) */}
+        {/* Selector de vista */}
         <div className="flex items-center gap-2 bg-surface-container-low p-1.5 rounded-xl self-start md:self-auto">
           <Button
-            variant="ghost"
-            className="px-5 py-1.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface rounded-lg"
-            title="Vista de día (próximamente)"
+            onClick={() => setViewMode('day')}
+            variant={viewMode === 'day' ? 'outline' : 'ghost'}
+            className={`px-5 py-1.5 text-sm font-semibold rounded-lg h-9 ${
+              viewMode === 'day'
+                ? 'bg-white text-primary border-none hover:bg-white hover:text-primary shadow-sm'
+                : 'text-on-surface-variant hover:text-on-surface'
+            }`}
           >
             Día
           </Button>
           <Button
-            variant="outline"
-            className="px-5 py-1.5 text-sm font-bold bg-white text-primary rounded-lg border-none hover:bg-white hover:text-primary shadow-sm h-9"
+            onClick={() => setViewMode('week')}
+            variant={viewMode === 'week' ? 'outline' : 'ghost'}
+            className={`px-5 py-1.5 text-sm font-semibold rounded-lg h-9 ${
+              viewMode === 'week'
+                ? 'bg-white text-primary border-none hover:bg-white hover:text-primary shadow-sm'
+                : 'text-on-surface-variant hover:text-on-surface'
+            }`}
           >
             Semana
           </Button>
           <Button
-            variant="ghost"
-            className="px-5 py-1.5 text-sm font-semibold text-on-surface-variant hover:text-on-surface rounded-lg"
-            title="Vista de mes (próximamente)"
+            onClick={() => setViewMode('month')}
+            variant={viewMode === 'month' ? 'outline' : 'ghost'}
+            className={`px-5 py-1.5 text-sm font-semibold rounded-lg h-9 ${
+              viewMode === 'month'
+                ? 'bg-white text-primary border-none hover:bg-white hover:text-primary shadow-sm'
+                : 'text-on-surface-variant hover:text-on-surface'
+            }`}
           >
             Mes
           </Button>
@@ -273,105 +356,224 @@ export function CalendarPage() {
 
       {/* ── Grid del Calendario ─────────────────────────────────────────────── */}
       <section className="bg-surface-container-lowest rounded-xl shadow-[0_20px_50px_rgba(5,150,105,0.05)] overflow-x-auto w-full">
-        <div className="min-w-[800px]">
+        
+        {/* VISTA DE DÍA */}
+        {viewMode === 'day' && (
+          <div className="min-w-[800px]">
+            {/* Cabecera */}
+            <div className="grid grid-cols-[80px_1fr] bg-surface-container-low border-b border-outline-variant/10">
+              <div className="p-4 border-r border-outline-variant/10" />
+              <div className="p-4 text-center">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                  {DAY_NAMES_ES[selectedDate.getDay()]}
+                </p>
+                <p className="text-xl font-extrabold text-on-surface mt-1">
+                  {selectedDate.getDate()}/{(selectedDate.getMonth() + 1).toString().padStart(2, '0')}
+                </p>
+              </div>
+            </div>
 
-          {/* Cabecera de días */}
-          <div className="grid grid-cols-[80px_repeat(7,1fr)] bg-surface-container-low border-b border-outline-variant/10">
-            <div className="p-4 border-r border-outline-variant/10" />
-            {weekDays.map((day, i) => {
-              const dayIsToday = isToday(day);
-              const dayIsWeekend = isWeekend(day);
-              return (
-                <div
-                  key={i}
-                  className={`p-4 text-center border-r border-outline-variant/10 last:border-r-0 ${
-                    dayIsToday ? 'bg-primary/5' : dayIsWeekend ? 'bg-surface-container-lowest/50' : ''
-                  }`}
-                >
-                  <p
-                    className={`text-[10px] font-bold uppercase tracking-widest ${
-                      dayIsToday ? 'text-primary' : 'text-on-surface-variant'
-                    }`}
-                  >
-                    {DAY_NAMES_ES[i]}
-                  </p>
-                  <p
-                    className={`text-xl font-extrabold ${
-                      dayIsToday
-                        ? 'text-primary'
-                        : dayIsWeekend
-                        ? 'text-on-surface-variant/50'
-                        : 'text-on-surface'
-                    }`}
-                  >
-                    {day.getDate()}
-                  </p>
-                  {dayIsToday && (
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full mx-auto mt-1" />
+            {/* Body */}
+            <div className="max-h-[600px] overflow-y-auto">
+              {WORK_HOURS.map((hour) => (
+                <div key={hour}>
+                  {hour === 13 && (
+                    <div className="grid grid-cols-[80px_1fr] border-b border-outline-variant/5 bg-primary/5">
+                      <div className="p-3 text-right text-[11px] font-bold text-primary uppercase self-center">
+                        12:00
+                      </div>
+                      <div className="p-4 flex items-center gap-4 min-h-14">
+                        <Utensils className="w-5 h-5 text-primary shrink-0" />
+                        <span className="text-xs font-bold text-primary uppercase tracking-widest">
+                          Descanso
+                        </span>
+                      </div>
+                    </div>
                   )}
+                  <div className="grid grid-cols-[80px_1fr] border-b border-outline-variant/5">
+                    <div className="p-3 text-right text-[11px] font-bold text-on-surface-variant/60 uppercase self-start pt-4">
+                      {String(hour).padStart(2, '0')}:00
+                    </div>
+                    <div className="p-2">
+                      {isLoading ? (
+                        <div className="h-20 animate-pulse bg-surface-container-low/30 rounded-lg" />
+                      ) : getEvent(selectedDate, hour) ? (
+                        <EventCell event={getEvent(selectedDate, hour)!} />
+                      ) : (
+                        <div className="min-h-20" />
+                      )}
+                    </div>
+                  </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
+        )}
 
-          {/* Cuerpo del grid */}
-          <div className="max-h-[600px] overflow-y-auto">
-            {WORK_HOURS.map((hour) => (
-              <div key={hour}>
-                {/* Fila especial de descanso justo antes de las 13:00 */}
-                {hour === 13 && (
-                  <div className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-outline-variant/5 bg-primary/5">
-                    <div className="p-3 text-right text-[11px] font-bold text-primary uppercase self-center">
-                      12:00
-                    </div>
-                    <div className="col-span-7 p-4 flex items-center gap-4 min-h-14">
-                      <Utensils className="w-5 h-5 text-primary shrink-0" />
-                      <span className="text-xs font-bold text-primary uppercase tracking-widest">
-                        Periodo de Descanso y Mantenimiento del Sistema
-                      </span>
-                    </div>
+        {/* VISTA DE SEMANA */}
+        {viewMode === 'week' && (
+          <div className="min-w-[800px]">
+            {/* Cabecera de días */}
+            <div className="grid grid-cols-[80px_repeat(7,1fr)] bg-surface-container-low border-b border-outline-variant/10">
+              <div className="p-4 border-r border-outline-variant/10" />
+              {weekDays.map((day, i) => {
+                const dayIsToday = isToday(day);
+                const dayIsWeekend = isWeekend(day);
+                return (
+                  <div
+                    key={i}
+                    className={`p-4 text-center border-r border-outline-variant/10 last:border-r-0 ${
+                      dayIsToday ? 'bg-primary/5' : dayIsWeekend ? 'bg-surface-container-lowest/50' : ''
+                    }`}
+                  >
+                    <p
+                      className={`text-[10px] font-bold uppercase tracking-widest ${
+                        dayIsToday ? 'text-primary' : 'text-on-surface-variant'
+                      }`}
+                    >
+                      {DAY_NAMES_ES[i]}
+                    </p>
+                    <p
+                      className={`text-xl font-extrabold ${
+                        dayIsToday
+                          ? 'text-primary'
+                          : dayIsWeekend
+                          ? 'text-on-surface-variant/50'
+                          : 'text-on-surface'
+                      }`}
+                    >
+                      {day.getDate()}
+                    </p>
+                    {dayIsToday && (
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full mx-auto mt-1" />
+                    )}
                   </div>
-                )}
+                );
+              })}
+            </div>
 
-                <div className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-outline-variant/5">
-                  {/* Etiqueta de hora */}
-                  <div className="p-3 text-right text-[11px] font-bold text-on-surface-variant/60 uppercase self-start pt-4">
-                    {String(hour).padStart(2, '0')}:00
+            {/* Cuerpo del grid */}
+            <div className="max-h-[600px] overflow-y-auto">
+              {WORK_HOURS.map((hour) => (
+                <div key={hour}>
+                  {hour === 13 && (
+                    <div className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-outline-variant/5 bg-primary/5">
+                      <div className="p-3 text-right text-[11px] font-bold text-primary uppercase self-center">
+                        12:00
+                      </div>
+                      <div className="col-span-7 p-4 flex items-center gap-4 min-h-14">
+                        <Utensils className="w-5 h-5 text-primary shrink-0" />
+                        <span className="text-xs font-bold text-primary uppercase tracking-widest">
+                          Periodo de Descanso y Mantenimiento del Sistema
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-[80px_repeat(7,1fr)] border-b border-outline-variant/5">
+                    <div className="p-3 text-right text-[11px] font-bold text-on-surface-variant/60 uppercase self-start pt-4">
+                      {String(hour).padStart(2, '0')}:00
+                    </div>
+
+                    {weekDays.map((day, di) => {
+                      const event = getEvent(day, hour);
+                      const dayIsToday = isToday(day);
+                      const dayIsWeekend = isWeekend(day);
+
+                      return (
+                        <div
+                          key={di}
+                          className={`p-2 border-r border-outline-variant/5 last:border-r-0 ${
+                            dayIsToday
+                              ? 'bg-primary/5'
+                              : dayIsWeekend
+                              ? 'bg-surface-container-lowest/40'
+                              : ''
+                          }`}
+                        >
+                          {isLoading ? (
+                            <div className="h-20 animate-pulse bg-surface-container-low/30 rounded-lg" />
+                          ) : event ? (
+                            <EventCell event={event} />
+                          ) : (
+                            <div className="min-h-20" />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-                  {/* Celdas por día */}
-                  {weekDays.map((day, di) => {
-                    const event = getEvent(day, hour);
-                    const dayIsToday = isToday(day);
-                    const dayIsWeekend = isWeekend(day);
+        {/* VISTA DE MES */}
+        {viewMode === 'month' && (
+          <div>
+            {/* Cabecera */}
+            <div className="grid grid-cols-7 gap-0 bg-surface-container-low border-b border-outline-variant/10">
+              {DAY_NAMES_ES.map((day) => (
+                <div key={day} className="p-4 text-center border-r border-outline-variant/10 last:border-r-0">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{day}</p>
+                </div>
+              ))}
+            </div>
 
-                    return (
-                      <div
-                        key={di}
-                        className={`p-2 border-r border-outline-variant/5 last:border-r-0 ${
-                          dayIsToday
-                            ? 'bg-primary/5'
-                            : dayIsWeekend
-                            ? 'bg-surface-container-lowest/40'
-                            : ''
-                        }`}
-                      >
-                        {isLoading ? (
-                          <div className="h-20 animate-pulse bg-surface-container-low/30 rounded-lg" />
-                        ) : event ? (
-                          <EventCell event={event} />
-                        ) : (
-                          <div className="min-h-20" />
+            {/* Grid de fechas */}
+            <div className="grid grid-cols-7 gap-0 divide-x divide-y divide-outline-variant/10">
+              {monthDays.map((day) => {
+                const dayIsToday = isToday(day);
+                const dayIsCurrentMonth = day.getMonth() === monthStart.getMonth();
+                const dayIsWeekend = isWeekend(day);
+                const dayEvents = WORK_HOURS.map((h) => getEvent(day, h)).filter((e) => e);
+
+                return (
+                  <div
+                    key={toDateKey(day)}
+                    className={`min-h-24 p-3 ${
+                      dayIsToday
+                        ? 'bg-primary/10 border-2 border-primary'
+                        : dayIsWeekend
+                        ? 'bg-surface-container-lowest/50'
+                        : dayIsCurrentMonth
+                        ? 'bg-surface-container-lowest'
+                        : 'bg-surface-container-highest/20'
+                    }`}
+                  >
+                    <p
+                      className={`text-sm font-bold ${
+                        dayIsToday
+                          ? 'text-primary'
+                          : dayIsCurrentMonth
+                          ? 'text-on-surface'
+                          : 'text-on-surface-variant/50'
+                      }`}
+                    >
+                      {day.getDate()}
+                    </p>
+                    {dayEvents.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {dayEvents.slice(0, 2).map((event, i) => (
+                          <div
+                            key={i}
+                            className="text-[10px] font-bold bg-primary/20 text-primary px-2 py-1 rounded truncate"
+                          >
+                            {event?.title}
+                          </div>
+                        ))}
+                        {dayEvents.length > 2 && (
+                          <p className="text-[10px] text-on-surface-variant">+{dayEvents.length - 2} más</p>
                         )}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
+        )}
 
-        </div>
       </section>
 
       {/* ── Acciones rápidas ─────────────────────────────────────────────────── */}

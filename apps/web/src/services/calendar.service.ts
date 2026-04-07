@@ -101,3 +101,55 @@ export async function getEvents(): Promise<CalendarEvent[]> {
     } as CalendarEvent;
   });
 }
+
+export async function createAppointment(appointmentData: {
+  patientId: number;
+  providerId: number;
+  serviceId: number;
+  startTime: Date;
+  endTime: Date;
+  notes?: string;
+}): Promise<{ success: boolean; id?: number; error?: string }> {
+  const supabase = ensureClient();
+  if (!supabase) {
+    return { success: false, error: 'Supabase no configurado' };
+  }
+
+  try {
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return { success: false, error: 'Usuario no autenticado' };
+    }
+
+    const clinicId = await getClinicId(userId);
+    if (!clinicId) {
+      return { success: false, error: 'Clínica no encontrada' };
+    }
+
+    const { data, error } = await supabase
+      .from('appointments')
+      .insert([
+        {
+          clinic_id: clinicId,
+          patient_id: appointmentData.patientId,
+          provider_id: appointmentData.providerId,
+          service_id: appointmentData.serviceId,
+          start_time: appointmentData.startTime.toISOString(),
+          end_time: appointmentData.endTime.toISOString(),
+          notes: appointmentData.notes || null,
+          status: 'pending',
+        },
+      ])
+      .select('id');
+
+    if (error) {
+      console.error('Error creando cita:', error.message);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, id: data?.[0]?.id };
+  } catch (err: any) {
+    console.error('Error creando cita:', err.message);
+    return { success: false, error: err.message };
+  }
+}

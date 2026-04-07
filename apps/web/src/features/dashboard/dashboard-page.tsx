@@ -24,6 +24,7 @@ export function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activity, setActivity] = useState<RecentActivity[]>([]);
   const [pulse, setPulse] = useState<{ metrics: AIPulseMetric[], threads: AIThread[] } | null>(null);
+  const [showFullHistory, setShowFullHistory] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,7 +106,11 @@ export function DashboardPage() {
         <div className="lg:col-span-2 flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-bold tracking-tight text-on-surface">Actividad Reciente</h3>
-            <Button variant="link" className="text-primary font-semibold p-0 h-auto">
+            <Button 
+              variant="link" 
+              className="text-primary font-semibold p-0 h-auto"
+              onClick={() => setShowFullHistory(true)}
+            >
               Ver Todo el Historial
             </Button>
           </div>
@@ -223,6 +228,65 @@ export function DashboardPage() {
           </Card>
         </div>
       </section>
+
+      {/* Modal de Historial Completo */}
+      {showFullHistory && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-auto shadow-2xl">
+            <div className="sticky top-0 bg-surface-container-low border-b border-outline-variant/10 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-on-surface">Historial Completo de Actividad</h2>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setShowFullHistory(false)}
+                className="text-on-surface-variant hover:bg-surface-container-highest"
+              >
+                ✕
+              </Button>
+            </div>
+            <div className="p-6">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-surface-container-low border-none">
+                    {['Nombre del Paciente', 'Estado', 'Hora', 'Acción'].map((h) => (
+                      <th key={h} className="px-6 py-4 text-xs uppercase tracking-wider text-on-surface-variant font-bold">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-outline-variant/10">
+                  {activity.map((row) => (
+                    <tr key={row.name} className="hover:bg-surface-container-high transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-8 h-8">
+                            <AvatarFallback className={`${row.avatarClass} font-bold text-xs`}>
+                              {row.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm font-medium text-on-surface">{row.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant="outline" className={`${row.badgeClass} border-none font-bold`}>
+                          {row.badgeLabel}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-on-surface-variant">{row.time}</td>
+                      <td className="px-6 py-4">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-primary/10">
+                          <MoreHorizontal className="w-5 h-5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
