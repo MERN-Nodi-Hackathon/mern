@@ -3,9 +3,6 @@ import {
   Bell,
   ShieldCheck,
   Wallet,
-  MapPin,
-  Plus,
-  Minus,
   Save
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -167,38 +164,6 @@ export function SettingsPage() {
             </div>
           </div>
         </SectionIconCard>
-
-        {/* Ubicación */}
-        <div className="col-span-12 space-y-4">
-          <Label className="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant px-2">Ubicación Registrada</Label>
-          <div className="relative w-full h-80 rounded-4xl overflow-hidden shadow-[0_20px_50px_rgba(5,150,105,0.05)] border-4 border-surface-container-lowest">
-            <div className="absolute inset-0 overflow-hidden">
-              <img
-                src={data.clinic.mapImageUrl}
-                alt="Mapa de ubicación de la clínica"
-                className="w-full h-full object-cover grayscale opacity-60 contrast-125 hover:scale-105 transition-transform duration-1000"
-              />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="flex flex-col items-center animate-bounce">
-                <div className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/30 ring-4 ring-primary/20 mb-3">
-                  <MapPin className="w-7 h-7" />
-                </div>
-                <div className="bg-surface-container-lowest/90 backdrop-blur-md px-5 py-2.5 rounded-xl shadow-xl">
-                  <p className="text-[13px] font-bold text-on-surface">{data.clinic.locationName}</p>
-                </div>
-              </div>
-            </div>
-            <div className="absolute bottom-6 right-6 flex flex-col gap-2">
-              <Button size="icon" variant="secondary" className="w-12 h-12 bg-surface-container-lowest/90 backdrop-blur rounded-xl shadow-lg text-on-surface hover:bg-surface-container-lowest">
-                <Plus className="w-6 h-6" />
-              </Button>
-              <Button size="icon" variant="secondary" className="w-12 h-12 bg-surface-container-lowest/90 backdrop-blur rounded-xl shadow-lg text-on-surface hover:bg-surface-container-lowest">
-                <Minus className="w-6 h-6" />
-              </Button>
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>
