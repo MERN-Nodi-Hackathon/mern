@@ -108,8 +108,9 @@ Disponibilidad:
 {"intent":"availability","clinicId":1,"serviceId":2,"providerId":1,"requestedStart":"2026-04-07T18:00:00.000Z"}
 
 Agendar:
-{"intent":"book","clinicId":1,"serviceId":2,"providerId":1,"requestedStart":"2026-04-07T20:00:00.000Z","patient":{"name":"Juan Pérez","phone":"+56981497412","email":"juan@mail.com"}}
-
+{"intent":"book","clinicId":1,"serviceId":2,"providerId":1,
+ "requestedStart":"...","timezone":"America/Santiago",
+ "patient":{"name":"...","phone":"...","email":"..."}}
 Cancelar:
 {"intent":"cancel","clinicId":1,"appointmentId":4}
 
@@ -122,7 +123,7 @@ Reagendar:
   ];
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${GEMINI_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

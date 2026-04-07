@@ -202,20 +202,27 @@ Deno.serve(async (request) => {
         .eq('phone', payload.patient.phone)
         .maybeSingle();
 
-      const patientRecord = existingPatient ?? (
-        await supabase
-          .from('patients')
-          .insert({
-            clinic_id: clinicId,
-            name: payload.patient.name,
-            phone: payload.patient.phone,
-            email: payload.patient.email ?? null,
-          })
-          .select('*')
-          .single()
-      ).data;
+let patientRecord = existingPatient;
+if (!patientRecord) {
+  const { data: newPatient, error: insertPatientError } = await supabase
+    .from('patients')
+    .insert({
+      clinic_id: clinicId,
+      name: payload.patient.name,
+      phone: payload.patient.phone,
+      email: payload.patient.email ?? null,
+      timezone: (payload as any).timezone ?? 'America/Bogota',
+    })
+    .select('*')
+    .single();
 
-      ensure(patientRecord, 'Unable to create or locate patient record.');
+  if (insertPatientError) {
+    throw new Error(`Patient insert failed: ${insertPatientError.message} | code: ${insertPatientError.code}`);
+  }
+  patientRecord = newPatient;
+}
+
+ensure(patientRecord, 'Unable to create or locate patient record.');
 
       // Conflict check
       const { data: conflict } = await supabase
