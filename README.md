@@ -1,6 +1,6 @@
 # MERN Nodi Hackathon
 
-Supabase-first scheduling starter for the MERN Nodi hackathon. This baseline gives the team a routed React app, Tailwind v4 styling, shared TypeScript contracts, Supabase schema and seed files, and Edge Function scaffolding for booking and reminders.
+Supabase-first scheduling starter for the MERN Nodi hackathon. This baseline gives the team a routed React app, Tailwind v4 styling, shared TypeScript contracts, Supabase schema and seed files, and Edge Function scaffolding for booking, reminders and easy to access historic patient information.
 
 ## Stack
 
