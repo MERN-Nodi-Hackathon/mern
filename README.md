@@ -2,25 +2,25 @@
 
 VitalAgent es un ecosistema integral B2B SaaS y Marketplace diseñado para eliminar la ineficiencia operativa en el sector de la salud privada. Resolvemos el problema del "gabinete vacío" mediante un agente de Inteligencia Artificial (IA) que automatiza las reservas 24/7 vía WhatsApp y un portal de captación de pacientes. Nuestra propuesta transforma un gasto administrativo en un motor activo de ingresos para las clínicas.
 
+🚀 **Enlace al proyecto desplegado:** [https://mern-web-rho.vercel.app/](https://mern-web-rho.vercel.app/)
+
 ## Para probar:
 
-Para probar la aplicacion se puede entrar con las siguientes credenciales:
-Mail: clinicacl@mail.com
-pass: clinicacl
+Para probar la aplicación en la web, puedes ingresar con las siguientes credenciales principales:
+- **Correo (Clínica):** `clinicacl@mail.com`
+- **Contraseña:** `clinicacl`
 
-Mail: clinicaco@mail.com
-pass: clinicaco
+_Otras cuentas de prueba:_
+- `clinicaco@mail.com` / `clinicaco`
+- `clinicabo@mail.com` / `clinicabo`
+- `clinicamx@mail.com` / `clinicamx`
 
-Mail: clinicabo@mail.com
-pass: clinicabo
+### 🤖 Probar el Agente IA
+Para probar el agente debes escanear la siguiente imagen (Sandbox de Twilio):
 
-Mail: clinicamx@mail.com
-pass: clinicamx
+![Escanear para WhatsApp](https://media.discordapp.net/attachments/1491268846533873714/1491305113535516682/image.png?ex=69d7359e&is=69d5e41e&hm=1644d85ae4008a113c2610611897117f047810f13ef329080b71898b4d872118&=&format=webp&quality=lossless&width=2928&height=1298)
 
-
-Para probar el agente se puede utilizar el sandbox de twilio como se indica en el video
-
-Link del demo: https://drive.google.com/file/d/1Qe2QI_3iODHMZfEjuSl85_PlW-PV7sLV/view?usp=drive_link
+> Link del demo en video: [Ver demo en Google Drive](https://drive.google.com/file/d/1Qe2QI_3iODHMZfEjuSl85_PlW-PV7sLV/view?usp=drive_link)
 
 
 ## Stack
