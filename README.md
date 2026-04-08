@@ -1,19 +1,27 @@
 # MERN Nodi Hackathon
 
-Supabase-first scheduling starter for the MERN Nodi hackathon. This baseline gives the team a routed React app, Tailwind v4 styling, shared TypeScript contracts, Supabase schema and seed files, and Edge Function scaffolding for booking, reminders and easy to access historic patient information.
+VitalAgent es un ecosistema integral B2B SaaS y Marketplace diseñado para eliminar la ineficiencia operativa en el sector de la salud privada. Resolvemos el problema del "gabinete vacío" mediante un agente de Inteligencia Artificial (IA) que automatiza las reservas 24/7 vía WhatsApp y un portal de captación de pacientes. Nuestra propuesta transforma un gasto administrativo en un motor activo de ingresos para las clínicas.
 
-Para probar:
+## Para probar:
+
 Para probar la aplicacion se puede entrar con las siguientes credenciales:
 Mail: clinicacl@mail.com
 pass: clinicacl
+
 Mail: clinicaco@mail.com
 pass: clinicaco
+
 Mail: clinicabo@mail.com
 pass: clinicabo
+
 Mail: clinicamx@mail.com
 pass: clinicamx
 
+
 Para probar el agente se puede utilizar el sandbox de twilio como se indica en el video
+
+Link del demo: https://drive.google.com/file/d/1Qe2QI_3iODHMZfEjuSl85_PlW-PV7sLV/view?usp=drive_link
+
 
 ## Stack
 
