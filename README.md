@@ -2,6 +2,19 @@
 
 Supabase-first scheduling starter for the MERN Nodi hackathon. This baseline gives the team a routed React app, Tailwind v4 styling, shared TypeScript contracts, Supabase schema and seed files, and Edge Function scaffolding for booking, reminders and easy to access historic patient information.
 
+Para probar:
+Para probar la aplicacion se puede entrar con las siguientes credenciales:
+Mail: clinicacl@mail.com
+pass: clinicacl
+Mail: clinicaco@mail.com
+pass: clinicaco
+Mail: clinicabo@mail.com
+pass: clinicabo
+Mail: clinicamx@mail.com
+pass: clinicamx
+
+Para probar el agente se puede utilizar el sandbox de twilio como se indica en el video
+
 ## Stack
 
 - React 19 + Vite 8
@@ -55,6 +68,8 @@ supabase           SQL migrations, seed data, Edge Functions
   Handles availability, booking, rescheduling, and cancellation.
 - `reminders`
   Finds due appointments and sends reminders, with a dry-run mode by default.
+- `whatsapp-agent`
+  Handles the agent using gemini
 
 Required function secrets when you deploy:
 
@@ -78,9 +93,3 @@ Without Twilio or Google credentials, the adapters fall back to safe mock behavi
   Runs TypeScript checks across workspaces.
 - `npm run build`
   Builds the shared package and the web app.
-
-## Security Notes
-
-- The GitHub personal access token and database password shared in chat should be rotated immediately.
-- Only public Supabase client values belong in `.env.example`.
-- Keep service-role keys, Twilio secrets, Google tokens, and database passwords out of git.
